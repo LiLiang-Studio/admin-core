@@ -1,0 +1,8 @@
+{
+  "name": "el-account",
+  "version": "1.0.0",
+  "description": "账户模块",
+  "main": "index.js",
+  "author": "liliang",
+  "license": "MIT"
+}

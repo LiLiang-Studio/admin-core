@@ -1,0 +1,39 @@
+{
+  "name": "el-app",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "liliang",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "serve": "env-cmd -e development -r ../../envrc.js vue-cli-service serve",
+    "build": "env-cmd -e production -r ../../envrc.js vue-cli-service build"
+  },
+  "dependencies": {
+    "@xview-ui/admin-core": "^1.1.2",
+    "el-account": "^1.0.0",
+    "core-js": "^3.3.2",
+    "element-ui": "^2.12.0",
+    "vue": "^2.6.10",
+    "vue-router": "^3.1.3",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.0.0",
+    "@vue/cli-service": "^4.0.0",
+    "env-cmd": "^10.0.1",
+    "less": "^3.0.4",
+    "less-loader": "^5.0.0",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}

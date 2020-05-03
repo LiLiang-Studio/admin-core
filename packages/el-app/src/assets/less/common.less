@@ -1,0 +1,42 @@
+@import url("./vars.less");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+  overflow: visible;
+}
+body {
+  color: @text-color-important;
+  background-color: @bgcolor;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+}
+a {
+  cursor: pointer;
+  text-decoration: none;
+  color: @text-color-important;
+  -webkit-tap-highlight-color: transparent;
+}
+li {
+  list-style: none;
+}
+
+// element-ui 样式覆盖
+.el-dropdown-menu__item {
+  white-space: nowrap;
+}
+.el-form-item {
+  margin-bottom: 24px !important;
+  &__error {
+    padding-top: 4px !important;
+  }
+}
+
+.ui-text-btns {
+  .el-button {
+    padding: 0;
+  }
+}

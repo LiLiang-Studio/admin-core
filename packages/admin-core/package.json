@@ -1,0 +1,29 @@
+{
+  "name": "@xview-ui/admin-core",
+  "version": "1.1.2",
+  "description": "基于Vuejs的中后台开发基础模块和基于element-ui的基础布局组件",
+  "main": "dist/admin-core.js",
+  "author": "liliang",
+  "license": "MIT",
+  "files": ["dist"],
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "devDependencies": {
+    "@rollup/plugin-buble": "^0.21.0",
+    "@rollup/plugin-json": "^4.0.1",
+    "autoprefixer": "^9.6.1",
+    "del": "^5.0.0",
+    "rollup": "^1.29.0",
+    "rollup-plugin-postcss": "^2.0.3",
+    "rollup-plugin-terser": "^5.2.0",
+    "rollup-plugin-vue": "^5.1.5",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "keywords": [
+    "admin",
+    "admin-core",
+    "admin-core ui",
+    "admin-ui"
+  ]
+}
