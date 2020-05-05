@@ -2,7 +2,7 @@
   <div :class="prefix">
     <c-header v-bind="headerProps">
       <template v-slot:left>
-        <el-link v-bind="menuBtnProps" @click="collapse = !collapse"/>
+        <el-link v-if="foldable" v-bind="menuBtnProps" @click="collapse = !collapse"/>
         <slot name="header-left"></slot>
       </template>
       <template v-slot:middle>
@@ -38,7 +38,11 @@ export default {
     asideClass: {},
     topbarStyle: {},
     topbarClass: {},
-    showTabs: Boolean
+    showTabs: Boolean,
+    foldable: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return { prefix: 'c-frame-layout', collapse: false }

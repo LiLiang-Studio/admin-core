@@ -1,5 +1,5 @@
 /*!
- * admin-core.element.js v1.1.2
+ * admin-core.element.js v1.1.3
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -817,7 +817,11 @@ var script$5 = {
     asideClass: {},
     topbarStyle: {},
     topbarClass: {},
-    showTabs: Boolean
+    showTabs: Boolean,
+    foldable: {
+      type: Boolean,
+      default: true
+    }
   },
   data: function data() {
     return { prefix: 'c-frame-layout', collapse: false }
@@ -870,21 +874,23 @@ var __vue_render__$5 = function() {
                   key: "left",
                   fn: function() {
                     return [
-                      _c(
-                        "el-link",
-                        _vm._b(
-                          {
-                            on: {
-                              click: function($event) {
-                                _vm.collapse = !_vm.collapse;
-                              }
-                            }
-                          },
-                          "el-link",
-                          _vm.menuBtnProps,
-                          false
-                        )
-                      ),
+                      _vm.foldable
+                        ? _c(
+                            "el-link",
+                            _vm._b(
+                              {
+                                on: {
+                                  click: function($event) {
+                                    _vm.collapse = !_vm.collapse;
+                                  }
+                                }
+                              },
+                              "el-link",
+                              _vm.menuBtnProps,
+                              false
+                            )
+                          )
+                        : _vm._e(),
                       _vm._v(" "),
                       _vm._t("header-left")
                     ]
