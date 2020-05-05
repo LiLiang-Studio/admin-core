@@ -1,5 +1,5 @@
 /*!
- * admin-core.element.js v1.1.3
+ * admin-core.element.js v1.1.4
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -818,7 +818,7 @@ var script$5 = {
     topbarStyle: {},
     topbarClass: {},
     showTabs: Boolean,
-    foldable: {
+    collapsible: {
       type: Boolean,
       default: true
     }
@@ -874,7 +874,7 @@ var __vue_render__$5 = function() {
                   key: "left",
                   fn: function() {
                     return [
-                      _vm.foldable
+                      _vm.collapsible
                         ? _c(
                             "el-link",
                             _vm._b(

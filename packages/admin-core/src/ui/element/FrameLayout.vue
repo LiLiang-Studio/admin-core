@@ -2,7 +2,7 @@
   <div :class="prefix">
     <c-header v-bind="headerProps">
       <template v-slot:left>
-        <el-link v-if="foldable" v-bind="menuBtnProps" @click="collapse = !collapse"/>
+        <el-link v-if="collapsible" v-bind="menuBtnProps" @click="collapse = !collapse"/>
         <slot name="header-left"></slot>
       </template>
       <template v-slot:middle>
@@ -39,7 +39,7 @@ export default {
     topbarStyle: {},
     topbarClass: {},
     showTabs: Boolean,
-    foldable: {
+    collapsible: {
       type: Boolean,
       default: true
     }
