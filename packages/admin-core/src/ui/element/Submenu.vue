@@ -1,12 +1,12 @@
 <template>
 <div>
-  <el-submenu v-if="menu.children && menu.children.length" popper-class="c-submenu_popper" :index="menu.meta.key">
+  <el-submenu v-if="menu.children && menu.children.length" :popper-class="`c-submenu_popper_${size}`" :index="menu.meta.key">
     <template v-slot:title>
       <i v-if="menu.meta.icon" :class="`el-icon-${menu.meta.icon}`"></i>
       <span>{{menu.meta.title}}</span>
     </template>
     <template v-for="item in menu.children">
-      <c-submenu v-if="item.children && item.children.length" :key="item.meta.key" :menu="item"/>
+      <c-submenu v-if="item.children && item.children.length" :key="item.meta.key" :menu="item" :size="size"/>
       <a v-else :key="item.meta.key" v-bind="getLink(item)">
         <el-menu-item :index="item.meta.key">{{item.meta.title}}</el-menu-item>
       </a>
@@ -23,7 +23,7 @@
 <script>
 export default {
   name: 'CSubmenu',
-  props: ['menu'],
+  props: ['menu', 'size'],
   methods: {
     getRoute(item) {
       return this.$router.resolve(

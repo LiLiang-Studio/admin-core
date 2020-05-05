@@ -26,6 +26,7 @@ export default {
     layoutProps() {
       return {
         showTabs: true,
+        menuSize: 'small',
         menus: this.$store.state.core.menus
       }
     }

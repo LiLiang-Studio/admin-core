@@ -170,15 +170,12 @@ const moduleLoader = (Vue, store, router) => {
  */
 const core = (Vue, { store, router }) => {
   store.registerModule('core', createCoreStore(router))
-  const adminCore = {
+  Vue.prototype.$adminCore = {
     ...base,
     filterRoutes,
     getRoute: base.getRoute(router),
     moduleLoader: moduleLoader(Vue, store, router)
   }
-  Vue.prototype.$adminCore = adminCore
-  Vue.prototype.$filterRoutes = filterRoutes
-  Vue.prototype.$moduleLoader = adminCore.moduleLoader
 }
 
 /**

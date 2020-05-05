@@ -1,5 +1,5 @@
 /*!
- * admin-core.js v1.1.4
+ * admin-core.js v1.1.5
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -319,13 +319,10 @@ var core = function (Vue, ref) {
   var router = ref.router;
 
   store.registerModule('core', createCoreStore(router));
-  var adminCore = Object.assign({}, base,
+  Vue.prototype.$adminCore = Object.assign({}, base,
     {filterRoutes: filterRoutes,
     getRoute: getRoute(router),
     moduleLoader: moduleLoader(Vue, store, router)});
-  Vue.prototype.$adminCore = adminCore;
-  Vue.prototype.$filterRoutes = filterRoutes;
-  Vue.prototype.$moduleLoader = adminCore.moduleLoader;
 };
 
 /**

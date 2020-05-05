@@ -1,5 +1,5 @@
 /*!
- * admin-core.element.js v1.1.4
+ * admin-core.element.js v1.1.5
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -28,7 +28,7 @@
 
 var script = {
   name: 'CSubmenu',
-  props: ['menu'],
+  props: ['menu', 'size'],
   methods: {
     getRoute: function getRoute(item) {
       return this.$router.resolve(
@@ -132,7 +132,7 @@ var __vue_render__ = function() {
             "el-submenu",
             {
               attrs: {
-                "popper-class": "c-submenu_popper",
+                "popper-class": "c-submenu_popper_" + _vm.size,
                 index: _vm.menu.meta.key
               },
               scopedSlots: _vm._u(
@@ -163,7 +163,7 @@ var __vue_render__ = function() {
                   item.children && item.children.length
                     ? _c("c-submenu", {
                         key: item.meta.key,
-                        attrs: { menu: item }
+                        attrs: { menu: item, size: _vm.size }
                       })
                     : _c(
                         "a",
@@ -285,6 +285,10 @@ var script$1 = {
     menus: {
       type: Array,
       default: function () { return []; }
+    },
+    menuSize: {
+      default: 'normal',
+      validator: function (v) { return ['small', 'normal', 'large'].indexOf(v) > -1; }
     }
   },
   data: function data() {
@@ -368,7 +372,7 @@ function styleInject(css, ref) {
   }
 }
 
-var css_248z = ".c-aside{height:100%;background:#414146;-webkit-box-shadow:2px 0 1px -1px rgba(0,0,0,.1),1px 0 1px 0 rgba(0,0,0,.06),1px 0 3px 0 rgba(0,0,0,.04);box-shadow:2px 0 1px -1px rgba(0,0,0,.1),1px 0 1px 0 rgba(0,0,0,.06),1px 0 3px 0 rgba(0,0,0,.04)}.c-aside_menu{width:240px}.c-aside_menu.el-menu{padding:8px 0;border-right:none}.c-aside_menu.el-menu.el-menu--collapse{width:64px}.c-aside .el-scrollbar{height:100%}.c-aside .el-scrollbar__wrap{overflow-x:hidden}.c-aside .el-menu--collapse>div>.el-submenu>.el-submenu__title .el-submenu__icon-arrow,.c-aside .el-menu--collapse>div>.el-submenu>.el-submenu__title span{display:none}.c-aside .el-menu-item,.c-aside .el-submenu .el-menu-item,.c-aside .el-submenu__title,.c-submenu_popper .el-menu-item,.c-submenu_popper .el-submenu .el-menu-item,.c-submenu_popper .el-submenu__title{height:48px;line-height:48px}";
+var css_248z = ".c-aside{height:100%;background:#414146;-webkit-box-shadow:2px 0 1px -1px rgba(0,0,0,.1),1px 0 1px 0 rgba(0,0,0,.06),1px 0 3px 0 rgba(0,0,0,.04);box-shadow:2px 0 1px -1px rgba(0,0,0,.1),1px 0 1px 0 rgba(0,0,0,.06),1px 0 3px 0 rgba(0,0,0,.04)}.c-aside_menu{width:220px}.c-aside_menu.el-menu{padding:8px 0;border-right:none}.c-aside_menu.el-menu.el-menu--collapse{width:64px}.c-aside .el-scrollbar{height:100%}.c-aside .el-scrollbar__wrap{overflow-x:hidden}.c-aside .el-menu--collapse>div>.el-submenu>.el-submenu__title .el-submenu__icon-arrow,.c-aside .el-menu--collapse>div>.el-submenu>.el-submenu__title span{display:none}.c-aside_normal .el-menu-item,.c-aside_normal .el-submenu .el-menu-item,.c-aside_normal .el-submenu__title,.c-submenu_popper_normal .el-menu-item,.c-submenu_popper_normal .el-submenu .el-menu-item,.c-submenu_popper_normal .el-submenu__title{height:48px;line-height:48px}.c-aside_small .el-menu-item,.c-aside_small .el-submenu .el-menu-item,.c-aside_small .el-submenu__title,.c-submenu_popper_small .el-menu-item,.c-submenu_popper_small .el-submenu .el-menu-item,.c-submenu_popper_small .el-submenu__title{height:42px;line-height:42px}";
 styleInject(css_248z);
 
 /* script */
@@ -380,7 +384,7 @@ var __vue_render__$1 = function() {
   var _c = _vm._self._c || _h;
   return _c(
     "aside",
-    { class: _vm.prefix },
+    { class: [_vm.prefix, _vm.prefix + "_" + _vm.menuSize] },
     [
       _c(
         "el-scrollbar",
@@ -391,7 +395,7 @@ var __vue_render__$1 = function() {
             _vm._l(_vm.menus, function(menu) {
               return _c("c-submenu", {
                 key: menu.meta.key,
-                attrs: { menu: menu }
+                attrs: { menu: menu, size: _vm.menuSize }
               })
             }),
             1
@@ -821,7 +825,8 @@ var script$5 = {
     collapsible: {
       type: Boolean,
       default: true
-    }
+    },
+    menuSize: String
   },
   data: function data() {
     return { prefix: 'c-frame-layout', collapse: false }
@@ -832,7 +837,8 @@ var script$5 = {
         menus: this.menus,
         collapse: this.collapse,
         class: this.asideClass,
-        style: this.asideStyle
+        style: this.asideStyle,
+        menuSize: this.menuSize
       }
     },
     headerProps: function headerProps() {

@@ -1,8 +1,8 @@
 <template>
-  <aside :class="prefix">
+  <aside :class="[prefix, `${prefix}_${menuSize}`]">
     <el-scrollbar>
       <el-menu v-bind="menuProps">
-        <c-submenu v-for="menu in menus" :key="menu.meta.key" :menu="menu"/>
+        <c-submenu v-for="menu in menus" :key="menu.meta.key" :menu="menu" :size="menuSize"/>
       </el-menu>
     </el-scrollbar>
   </aside>
@@ -18,6 +18,10 @@ export default {
     menus: {
       type: Array,
       default: () => []
+    },
+    menuSize: {
+      default: 'normal',
+      validator: v => ['small', 'normal', 'large'].indexOf(v) > -1
     }
   },
   data() {
@@ -67,7 +71,9 @@ export default {
 </script>
 <style lang="less">
 @import url("../vars.less");
-.c-aside {
+@aside: .c-aside;
+@popper: .c-submenu_popper;
+@{aside} {
   height: 100%;
   background: @theme-bgcolor;
   box-shadow: @aside-shadow;
@@ -92,11 +98,20 @@ export default {
     display: none;
   }
 }
-.c-submenu_popper, .c-aside {
+
+@{popper}_normal, @{aside}_normal {
   .el-submenu .el-menu-item,
   .el-menu-item, .el-submenu__title {
     height: 48px;
     line-height: 48px;
+  }
+}
+
+@{popper}_small, @{aside}_small {
+  .el-submenu .el-menu-item,
+  .el-menu-item, .el-submenu__title {
+    height: 42px;
+    line-height: 42px;
   }
 }
 </style>

@@ -42,7 +42,8 @@ export default {
     collapsible: {
       type: Boolean,
       default: true
-    }
+    },
+    menuSize: String
   },
   data() {
     return { prefix: 'c-frame-layout', collapse: false }
@@ -53,7 +54,8 @@ export default {
         menus: this.menus,
         collapse: this.collapse,
         class: this.asideClass,
-        style: this.asideStyle
+        style: this.asideStyle,
+        menuSize: this.menuSize
       }
     },
     headerProps() {
