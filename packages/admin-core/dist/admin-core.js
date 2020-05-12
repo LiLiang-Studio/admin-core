@@ -1,5 +1,5 @@
 /*!
- * admin-core.js v1.1.5
+ * admin-core.js v1.1.6
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -119,6 +119,83 @@ var getRoute = function (router) { return function () {
   return router.resolve(router.mode === 'hash' ? location.hash.slice(1) : location.pathname).route
 }; };
 
+var REG_PORT = /^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/;
+var REG_IP = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
+var REG_IP_PORT = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\:([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/;
+
+/**
+ * 创建IP验证规则
+ * @param {{
+ *   trigger: String, 
+ *   required: Boolean, 
+ *   port: Boolean,
+ *   msg: String,
+ *   regmsg: String, 
+ *   remoteMethod: Function
+ * }} options
+ */
+var createIpRule = function (options) {
+  if ( options === void 0 ) options = {};
+
+  var trigger = options.trigger; if ( trigger === void 0 ) trigger = null;
+  var required = options.required; if ( required === void 0 ) required = true;
+  var port = options.port;
+  var msgPrefix = port ? '（含端口号）' : '';
+  var msg = options.msg || ("请输入IP地址" + msgPrefix);
+  var regmsg = options.regmsg || ("请输入合法的IP地址" + msgPrefix);
+  return [
+    {
+      trigger: trigger,
+      required: required,
+      validator: function validator(rule, value, callback) {
+        if (value) {
+          if ((port ? REG_IP_PORT : REG_IP).test(value)) {
+            options.remoteMethod ? options.remoteMethod(rule, value, callback) : callback();
+          } else {
+            callback(new Error(regmsg));
+          }
+        } else {
+          required ? callback(new Error(msg)) : callback();
+        }
+      }
+    }
+  ]
+};
+
+/**
+ * 创建端口验证规则
+ * @param {{
+ *   trigger: String, 
+ *   required: Boolean,
+ *   msg: String,
+ *   regmsg: String, 
+ *   remoteMethod: Function
+ * }} options 
+ */
+var createPortRule = function (options) {
+  if ( options === void 0 ) options = {};
+
+  var trigger = options.trigger; if ( trigger === void 0 ) trigger = null;
+  var required = options.required; if ( required === void 0 ) required = true;
+  return [
+    {
+      trigger: trigger,
+      required: required,
+      validator: function validator(rule, value, callback) {
+        if (value) {
+          if (REG_PORT.test(value)) {
+            options.remoteMethod ? options.remoteMethod(rule, value, callback) : callback();
+          } else {
+            callback(new Error(options.regmsg || '请输入合法的端口号'));
+          }
+        } else {
+          required ? callback(new Error(options.msg || '请输入端口号')) : callback();
+        }
+      }
+    }
+  ]
+};
+
 var base = /*#__PURE__*/Object.freeze({
   __proto__: null,
   formatDate: formatDate,
@@ -126,7 +203,9 @@ var base = /*#__PURE__*/Object.freeze({
   getChildComponents: getChildComponents,
   getSubStr: getSubStr,
   getRoute: getRoute,
-  getSize: getSize
+  getSize: getSize,
+  createIpRule: createIpRule,
+  createPortRule: createPortRule
 });
 
 /**
@@ -355,4 +434,4 @@ var navModal = function (key, prefix) {
 core.navModal = navModal;
 
 export default core;
-export { filterRoutes, formatDate, getChildComponents, getParentComponent, getRoute, getSize, getSubStr, navModal };
+export { createIpRule, createPortRule, filterRoutes, formatDate, getChildComponents, getParentComponent, getRoute, getSize, getSubStr, navModal };

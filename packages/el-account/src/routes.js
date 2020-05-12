@@ -76,5 +76,17 @@ export default [
         }
       }
     ]
+  },
+  {
+    path: '/demo',
+    component: { render: h => h('router-view') },
+    meta: { title: '工具演示', icon: 'notebook-1' },
+    children: [
+      {
+        path: 'validate',
+        component: () => import('./views/Validate.vue'),
+        meta: { title: '验证器' }
+      }
+    ]
   }
 ]

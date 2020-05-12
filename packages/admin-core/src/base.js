@@ -112,21 +112,22 @@ const getRoute = router => () => {
   return router.resolve(router.mode === 'hash' ? location.hash.slice(1) : location.pathname).route
 }
 
+const REG_PORT = /^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/
 const REG_IP = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
 const REG_IP_PORT = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\:([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/
 
 /**
  * 创建IP验证规则
  * @param {{
- *    trigger: String, 
- *    required: Boolean, 
- *    port: Boolean,
- *    msg: String,
- *    regmsg: String, 
- *    remoteMethod: Function
- *  }} options
+ *   trigger: String, 
+ *   required: Boolean, 
+ *   port: Boolean,
+ *   msg: String,
+ *   regmsg: String, 
+ *   remoteMethod: Function
+ * }} options
  */
-const createIpValidateRule = (options = {}) => {
+const createIpRule = (options = {}) => {
   let { trigger = null, required = true, port } = options
   let msgPrefix = port ? '（含端口号）' : ''
   let msg = options.msg || `请输入IP地址${msgPrefix}`
@@ -150,8 +151,35 @@ const createIpValidateRule = (options = {}) => {
   ]
 }
 
-const creratePortValidateRule = (options = {}) => {
-
+/**
+ * 创建端口验证规则
+ * @param {{
+ *   trigger: String, 
+ *   required: Boolean,
+ *   msg: String,
+ *   regmsg: String, 
+ *   remoteMethod: Function
+ * }} options 
+ */
+const createPortRule = (options = {}) => {
+  let { trigger = null, required = true } = options
+  return [
+    {
+      trigger,
+      required,
+      validator(rule, value, callback) {
+        if (value) {
+          if (REG_PORT.test(value)) {
+            options.remoteMethod ? options.remoteMethod(rule, value, callback) : callback()
+          } else {
+            callback(new Error(options.regmsg || '请输入合法的端口号'))
+          }
+        } else {
+          required ? callback(new Error(options.msg || '请输入端口号')) : callback()
+        }
+      }
+    }
+  ]
 }
 
 export {
@@ -161,6 +189,6 @@ export {
   getSubStr,
   getRoute,
   getSize,
-  createIpValidateRule,
-  creratePortValidateRule
+  createIpRule,
+  createPortRule
 }
