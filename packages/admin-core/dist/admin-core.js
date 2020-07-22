@@ -1,5 +1,5 @@
 /*!
- * admin-core.js v1.1.6
+ * admin-core.js v1.1.7
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -244,8 +244,6 @@ var converter = function (routes, basePath) {
  * @param {String[]} tags 
  */
 var filterRoutes = function (routes, tags) {
-  if ( tags === void 0 ) tags = [];
-
   var eachRoute = function (child, parent) {
     var tag = child.meta.permissionTag;
     if (tag && tags.indexOf(tag) < 0) {
@@ -259,7 +257,7 @@ var filterRoutes = function (routes, tags) {
       child.children = child.children.filter(function (_) { return _; });
     }
   };
-  return routes.forEach(function (_) { return eachRoute(_); }), converter(routes)
+  return tags && routes.forEach(function (_) { return eachRoute(_); }), converter(routes)
 };
 
 /**

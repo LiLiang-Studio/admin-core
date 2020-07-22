@@ -33,7 +33,7 @@ const converter = (routes, basePath) => {
  * @param {import('vue-router').RouteConfig[]} routes 
  * @param {String[]} tags 
  */
-const filterRoutes = (routes, tags = []) => {
+const filterRoutes = (routes, tags) => {
   const eachRoute = (child, parent) => {
     let tag = child.meta.permissionTag
     if (tag && tags.indexOf(tag) < 0) {
@@ -47,7 +47,7 @@ const filterRoutes = (routes, tags = []) => {
       child.children = child.children.filter(_ => _)
     }
   }
-  return routes.forEach(_ => eachRoute(_)), converter(routes)
+  return tags && routes.forEach(_ => eachRoute(_)), converter(routes)
 }
 
 /**
