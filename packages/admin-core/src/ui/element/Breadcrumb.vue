@@ -17,7 +17,7 @@ export default {
   },
   computed: {
     items() {
-      return this.$route.matched.filter(_ => _.meta && _.meta.title)
+      return this.$route.matched.filter(_ => _.meta.title)
     }
   }
 }

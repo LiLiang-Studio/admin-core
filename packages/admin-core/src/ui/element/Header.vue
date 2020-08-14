@@ -1,8 +1,12 @@
 <template>
   <header :class="[prefix, {hasTabs}]">
     <div :class="[`${prefix}_topbar`, topbarClass]" :style="topbarStyle">
-      <slot name="left"></slot>
-      <div :class="`${prefix}_middle`"></div>
+      <div :class="`${prefix}_left`">
+        <slot name="left"></slot>
+      </div>
+      <div :class="`${prefix}_middle`">
+        <slot name="middle"></slot>
+      </div>
       <slot name="right"></slot>
     </div>
     <slot></slot>
@@ -39,7 +43,7 @@ export default {
   box-shadow: @header-shadow;
   &.hasTabs {
     box-shadow: none;
-    border: 1px solid @border-color;
+    border-bottom: 1px solid @border-color;
   }
   &_topbar {
     height: 52px;
@@ -47,12 +51,12 @@ export default {
     display: flex;
     align-items: center;
   }
+  &_left > *, &_middle > * {
+    vertical-align: middle;
+  }
   &_middle {
     flex: 1;
-    height: 100%;
     padding: 0 10px;
-    display: flex;
-    align-items: center;
   }
 }
 </style>

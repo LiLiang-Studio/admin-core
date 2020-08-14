@@ -1,21 +1,21 @@
 <template>
   <div :class="prefix">
     <c-header v-bind="headerProps">
-      <template v-slot:left>
-        <el-link v-if="collapsible" v-bind="menuBtnProps" @click="collapse = !collapse"/>
+      <template #left>
+        <el-link v-if="collapsible" v-bind="menuBtnProps" @click="toggleCollapse"/>
         <slot name="header-left"></slot>
       </template>
-      <template v-slot:middle>
+      <template #middle>
         <slot name="header-middle"></slot>
       </template>
-      <template v-slot:right>
+      <template #right>
         <slot name="header-right"></slot>
       </template>
     </c-header>
     <div :class="`${prefix}_wrap`">
       <c-aside :class="`${prefix}_aside`" v-bind="asideProps"/>
       <main :class="`${prefix}_main`">
-        <c-tabs v-if="showTabs"/>
+        <c-tabs v-if="showTabs" ref="Tabs"/>
         <div :class="`${prefix}_content`">
           <c-breadcrumb/>
           <slot></slot>
@@ -69,6 +69,14 @@ export default {
         { title: '展开侧栏', icon: 'el-icon-s-unfold' } :
         { title: '收起侧栏', icon: 'el-icon-s-fold' }
       return { ...props, underline: false, class: `${this.prefix}_menuBtn` }
+    }
+  },
+  methods: {
+    getTabsComponent() {
+      return this.$refs.Tabs
+    },
+    toggleCollapse() {
+      this.collapse = !this.collapse
     }
   }
 }

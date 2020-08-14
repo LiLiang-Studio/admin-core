@@ -1,5 +1,5 @@
 /*!
- * admin-core.js v1.1.7
+ * admin-core.js v1.1.8
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */

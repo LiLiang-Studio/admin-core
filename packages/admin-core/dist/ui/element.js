@@ -1,5 +1,5 @@
 /*!
- * admin-core.element.js v1.1.7
+ * admin-core.element.js v1.1.8
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -458,7 +458,7 @@ var script$2 = {
   },
   computed: {
     items: function items() {
-      return this.$route.matched.filter(function (_) { return _.meta && _.meta.title; })
+      return this.$route.matched.filter(function (_) { return _.meta.title; })
     }
   }
 };
@@ -564,7 +564,7 @@ var script$3 = {
   }
 };
 
-var css_248z$2 = ".c-header{position:relative;z-index:10;background:#fff;-webkit-box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04);box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04)}.c-header.hasTabs{-webkit-box-shadow:none;box-shadow:none;border:1px solid #e4e7ed}.c-header_topbar{height:52px;padding:0 16px;-ms-flex-align:center}.c-header_middle,.c-header_topbar{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;align-items:center}.c-header_middle{-webkit-box-flex:1;-ms-flex:1;flex:1;height:100%;padding:0 10px;-ms-flex-align:center}";
+var css_248z$2 = ".c-header{position:relative;z-index:10;background:#fff;-webkit-box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04);box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04)}.c-header.hasTabs{-webkit-box-shadow:none;box-shadow:none;border-bottom:1px solid #e4e7ed}.c-header_topbar{height:52px;padding:0 16px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.c-header_left>*,.c-header_middle>*{vertical-align:middle}.c-header_middle{-webkit-box-flex:1;-ms-flex:1;flex:1;padding:0 10px}";
 styleInject(css_248z$2);
 
 /* script */
@@ -585,9 +585,9 @@ var __vue_render__$3 = function() {
           style: _vm.topbarStyle
         },
         [
-          _vm._t("left"),
+          _c("div", { class: _vm.prefix + "_left" }, [_vm._t("left")], 2),
           _vm._v(" "),
-          _c("div", { class: _vm.prefix + "_middle" }),
+          _c("div", { class: _vm.prefix + "_middle" }, [_vm._t("middle")], 2),
           _vm._v(" "),
           _vm._t("right")
         ],
@@ -853,6 +853,14 @@ var script$5 = {
         { title: '收起侧栏', icon: 'el-icon-s-fold' };
       return Object.assign({}, props, {underline: false, class: ((this.prefix) + "_menuBtn")})
     }
+  },
+  methods: {
+    getTabsComponent: function getTabsComponent() {
+      return this.$refs.Tabs
+    },
+    toggleCollapse: function toggleCollapse() {
+      this.collapse = !this.collapse;
+    }
   }
 };
 
@@ -884,13 +892,7 @@ var __vue_render__$5 = function() {
                         ? _c(
                             "el-link",
                             _vm._b(
-                              {
-                                on: {
-                                  click: function($event) {
-                                    _vm.collapse = !_vm.collapse;
-                                  }
-                                }
-                              },
+                              { on: { click: _vm.toggleCollapse } },
                               "el-link",
                               _vm.menuBtnProps,
                               false
@@ -946,7 +948,7 @@ var __vue_render__$5 = function() {
             "main",
             { class: _vm.prefix + "_main" },
             [
-              _vm.showTabs ? _c("c-tabs") : _vm._e(),
+              _vm.showTabs ? _c("c-tabs", { ref: "Tabs" }) : _vm._e(),
               _vm._v(" "),
               _c(
                 "div",
