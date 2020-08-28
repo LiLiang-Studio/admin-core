@@ -36,7 +36,8 @@ export default {
       return (route && route.meta.title) || '未命名页面'
     },
     isHome(path) {
-      return path === '/' || this.getRoute(path).name === 'home'
+      let homePath = this.getRoute('/').path
+      return path === '/' || this.getRoute(path).name === 'home' || homePath === path
     },
     addItem(route) {
       if (route.matched.length) {
@@ -56,11 +57,16 @@ export default {
       let index = this.tabs.indexOf(name)
       let nextTab = this.tabs[index + 1] || this.tabs[index - 1]
       this.tabs.splice(index, 1)
-      name === this.current && this.$router.push(nextTab ? nextTab : '/')
+      name === this.current && this.$router.push(nextTab ? nextTab : '/').catch((e) => {
+        this.tabs = [name]
+      })
     },
     onCloseAll() {
-      this.tabs = ['/']
-      this.current && this.$router.push('/').catch(() => {})
+      this.tabs = []
+      // 如果导航失败 说明当前处于首页 那么将当前页放入标签页数组
+      this.$router.push('/').catch(() => {
+        this.tabs = [this.current]
+      })
     },
     onCloseCurrent() {
       this.current && this.closable && this.onTabRemove(this.current)
@@ -93,6 +99,7 @@ export default {
     height: 100%;
   }
   .el-tabs__header {
+    min-height: 33px;
     margin-bottom: 0;
     padding: 0 32px 0 6px;
   }

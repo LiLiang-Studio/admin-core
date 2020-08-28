@@ -1,5 +1,5 @@
 /*!
- * admin-core.element.js v1.1.8
+ * admin-core.element.js v1.1.9
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -669,7 +669,8 @@ var script$4 = {
       return (route && route.meta.title) || '未命名页面'
     },
     isHome: function isHome(path) {
-      return path === '/' || this.getRoute(path).name === 'home'
+      var homePath = this.getRoute('/').path;
+      return path === '/' || this.getRoute(path).name === 'home' || homePath === path
     },
     addItem: function addItem(route) {
       var this$1 = this;
@@ -688,14 +689,23 @@ var script$4 = {
       this.$router.push(tab.name).catch(function () {});
     },
     onTabRemove: function onTabRemove(name) {
+      var this$1 = this;
+
       var index = this.tabs.indexOf(name);
       var nextTab = this.tabs[index + 1] || this.tabs[index - 1];
       this.tabs.splice(index, 1);
-      name === this.current && this.$router.push(nextTab ? nextTab : '/');
+      name === this.current && this.$router.push(nextTab ? nextTab : '/').catch(function (e) {
+        this$1.tabs = [name];
+      });
     },
     onCloseAll: function onCloseAll() {
-      this.tabs = ['/'];
-      this.current && this.$router.push('/').catch(function () {});
+      var this$1 = this;
+
+      this.tabs = [];
+      // 如果导航失败 说明当前处于首页 那么将当前页放入标签页数组
+      this.$router.push('/').catch(function () {
+        this$1.tabs = [this$1.current];
+      });
     },
     onCloseCurrent: function onCloseCurrent() {
       this.current && this.closable && this.onTabRemove(this.current);
@@ -709,7 +719,7 @@ var script$4 = {
   }
 };
 
-var css_248z$3 = ".c-tabs{position:relative;z-index:10;padding:3px 0;background:#fff;-webkit-box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04);box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04)}.c-tabs .el-dropdown{position:absolute;top:3px;right:10px;bottom:3px}.c-tabs_link.el-link{height:100%}.c-tabs .el-tabs__header{margin-bottom:0;padding:0 32px 0 6px}.c-tabs .el-tabs__item{height:32px;line-height:32px;font-size:12px}.c-tabs .el-tabs__nav-next,.c-tabs .el-tabs__nav-prev{line-height:36px;font-size:14px}";
+var css_248z$3 = ".c-tabs{position:relative;z-index:10;padding:3px 0;background:#fff;-webkit-box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04);box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04)}.c-tabs .el-dropdown{position:absolute;top:3px;right:10px;bottom:3px}.c-tabs_link.el-link{height:100%}.c-tabs .el-tabs__header{min-height:33px;margin-bottom:0;padding:0 32px 0 6px}.c-tabs .el-tabs__item{height:32px;line-height:32px;font-size:12px}.c-tabs .el-tabs__nav-next,.c-tabs .el-tabs__nav-prev{line-height:36px;font-size:14px}";
 styleInject(css_248z$3);
 
 /* script */
