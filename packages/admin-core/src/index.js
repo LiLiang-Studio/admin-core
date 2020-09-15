@@ -192,13 +192,16 @@ const navModal = (key, prefix = '') => {
   }
   return {
     computed: {
+      vnodeTag() {
+        return this.$vnode.tag
+      },
       [visible]() {
-        return this.$store.state.core.modal[key]
+        return this.$store.state.core.modal[this.vnodeTag]
       }
     },
     methods: {
       [onShow](visible) {
-        this.$store.commit('core/SHOW_MODAL', { [key]: visible })
+        this.$store.commit('core/SHOW_MODAL', { [this.vnodeTag]: visible })
       }
     }
   }

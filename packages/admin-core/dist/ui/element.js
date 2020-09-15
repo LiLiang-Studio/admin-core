@@ -1,5 +1,5 @@
 /*!
- * admin-core.element.js v1.1.9
+ * admin-core.element.js v1.2.0
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */

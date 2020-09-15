@@ -1,5 +1,5 @@
 /*!
- * admin-core.js v1.1.9
+ * admin-core.js v1.2.0
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -418,13 +418,17 @@ var navModal = function (key, prefix) {
     onShow = "on" + (prefix[0].toUpperCase() + prefix.slice(1).toLowerCase()) + "Show";
   }
   return {
-    computed: ( obj = {}, obj[visible] = function () {
-        return this.$store.state.core.modal[key]
+    computed: ( obj = {
+      vnodeTag: function vnodeTag() {
+        return this.$vnode.tag
+      }
+    }, obj[visible] = function () {
+        return this.$store.state.core.modal[this.vnodeTag]
       }, obj ),
     methods: ( obj$1 = {}, obj$1[onShow] = function (visible) {
         var obj;
 
-        this.$store.commit('core/SHOW_MODAL', ( obj = {}, obj[key] = visible, obj ));
+        this.$store.commit('core/SHOW_MODAL', ( obj = {}, obj[this.vnodeTag] = visible, obj ));
       }, obj$1 )
   }
 };
