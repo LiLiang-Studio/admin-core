@@ -2,7 +2,7 @@ const pad = (val, len) => (val + '').length < len ? pad('0' + val, len) : val
 
 /**
  * 格式化日期
- * @param {Date | String} d 
+ * @param {Date|String|Number} d 
  * @param {String} format 
  */
 const formatDate = (d, format = 'yyyy-MM-dd HH:mm:ss') => {
@@ -21,34 +21,35 @@ const formatDate = (d, format = 'yyyy-MM-dd HH:mm:ss') => {
   let monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   let shortMonthNames = monthNames.map(_ => _.slice(0, 3))
   let shortDayNames = dayNames.map(_ => _.slice(0, 3))
-
-  return format
-    .replace(/yyyy/g, () => year) // 年份（四位）
-    .replace(/yy/g, () => (year + '').slice(2)) // 年份（两位）
-    .replace(/MMMM/g, () => monthNames[month - 1]) // 月份（英文）
-    .replace(/MMM/g, () => shortMonthNames[month - 1]) // 月份（英文简写
-    .replace(/MM/g, () => pad(month, 2)) // 月份（两位）
-    .replace(/M/g, () => month) // 月份（一位）
-    .replace(/dddd/g, () => dayNames[day]) // 星期（英文）
-    .replace(/ddd/g, () => shortDayNames[day]) // 星期（英文简写）
-    .replace(/dd/g, () => pad(date, 2)) // 日期（两位）
-    .replace(/d/g, () => date) // 日期（一位）
-    .replace(/DD/g, () => '0' + day) // 星期（两位）
-    .replace(/D/g, () => day) // 星期（一位）
-    .replace(/HH/g, () => pad(hours, 2)) // 小时（24小时制两位）
-    .replace(/H/g, () => hours) // 小时（24小时制一位）
-    .replace(/hh/g, () => pad(hours > 12 ? hours - 12 : hours, 2)) // 小时（12小时制两位）
-    .replace(/h/g, () => hours > 12 ? hours - 12 : hours) // 小时（12小时制一位）
-    .replace(/mm/g, () => pad(minutes, 2)) // 分钟（两位）
-    .replace(/m/g, () => minutes) // 分钟（一位）
-    .replace(/ss/g, () => pad(seconds, 2)) // 秒钟（两位）
-    .replace(/s/g, () => seconds) // 秒钟（一位）
-    .replace(/SSS/g, () => pad(ms, 3)) // 毫秒（三位）
-    .replace(/SS/g, () => pad(Math.round(ms / 10), 2)) // 毫秒（两位）
-    .replace(/S/g, () => Math.round(ms / 100)) // 毫秒（一位）
-    .replace(/A/g, () => hours > 12 ? 'PM' : 'AM') // 上午与下午（大写）
-    .replace(/a/g, () => hours > 12 ? 'pm' : 'am') // 上午与下午（小写）
-    .replace(/ZZ/g, () => (zone > 0 ? '-' : '+') + pad(Math.floor(Math.abs(zone) / 60) * 100 + Math.abs(zone) % 60, 4)) // 时区
+  const fn = val => () => val
+  return [
+    [/yyyy/g, fn(year)], // 年份（四位）
+    [/yy/g, fn((year + '').slice(2))], // 年份（两位）
+    [/MMMM/g, fn(monthNames[month - 1])], // 月份（英文）
+    [/MMM/g, fn(shortMonthNames[month - 1])], // 月份（英文简写）
+    [/MM/g, fn(pad(month, 2))], // 月份（两位）
+    [/M/g, fn(month)], // 月份（一位）
+    [/dddd/g, fn(dayNames[day])], // 星期（英文）
+    [/ddd/g, fn(shortDayNames[day])], // 星期（英文简写）
+    [/dd/g, fn(pad(date, 2))], // 日期（两位）
+    [/d/g, fn(date)], // 日期（一位）
+    [/DD/g, fn('0' + day)], // 星期（两位）
+    [/D/g, fn(day)], // 星期（一位）
+    [/HH/g, fn(pad(hours, 2))], // 小时（24小时制两位）
+    [/H/g, fn(hours)], // 小时（24小时制一位）
+    [/hh/g, fn(pad(hours > 12 ? hours - 12 : hours, 2))], // 小时（12小时制两位）
+    [/h/g, fn(hours > 12 ? hours - 12 : hours)], // 小时（12小时制一位）
+    [/mm/g, fn(pad(minutes, 2))], // 分钟（两位）
+    [/m/g, pad(minutes, 2)], // 分钟（一位）
+    [/ss/g, fn(pad(seconds, 2))], // 秒钟（两位）
+    [/s/g, fn(seconds)], // 秒钟（一位）
+    [/SSS/g, fn(pad(ms, 3))], // 毫秒（三位）
+    [/SS/g, fn(pad(Math.round(ms / 10), 2))], // 毫秒（两位）
+    [/S/g, fn(Math.round(ms / 100))], // 毫秒（一位）
+    [/A/g, fn(hours > 12 ? 'PM' : 'AM')], // 上午与下午（大写）
+    [/a/g, fn(hours > 12 ? 'pm' : 'am')], // 上午与下午（小写）
+    [/ZZ/g, fn((zone > 0 ? '-' : '+') + pad(Math.floor(Math.abs(zone) / 60) * 100 + Math.abs(zone) % 60, 4))] // 时区
+  ].reduce((acc, _) => acc.replace(_[0], _[1]), format)
 }
 
 /**
@@ -57,24 +58,25 @@ const formatDate = (d, format = 'yyyy-MM-dd HH:mm:ss') => {
  * @param {String} name 
  */
 const getParentComponent = (vm, name) => {
-  let parent = vm.$parent
-  while (parent) {
-    if (parent.$options.name === name) {
-      return parent
-    }
-    parent = parent.$parent
-  }
+  const par = vm.$parent
+  return par && (par.$options.name === name ? par : getParentComponent(par, name))
 }
 
 /**
  * 获取所有子组件
  * @param {import('vue').default} vm 
  * @param {String?} name 若提供 则获取所有指定name的子组件
+ * @param {Boolean} flag 当基于name查找时，如果为真 则 查找到后 不再向下继续查找
  * @returns {import('vue').default[]} 子组件数组
  */
-const getChildComponents = (vm, name) => {
-  const childs = name ? vm.$children.filter(_ => _.$options.name === name) : vm.$children
-  return childs.reduce((acc, _) => [...acc, _, ...(_.$children.length ? getChildComponents(_, name) : [])], [])
+const getChildComponents = (vm, name, flag) => {
+  return vm.$children.reduce((acc, _) => {
+    if (!name || _.$options.name === name) {
+      acc.push(vm)
+      if (name && flag) return acc
+    }
+    return [...acc, ...(_.$children.length ? getChildComponents(_, name, flag) : [])]
+  }, [])
 }
 
 /**

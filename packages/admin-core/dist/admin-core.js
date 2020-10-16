@@ -7,7 +7,7 @@ var pad = function (val, len) { return (val + '').length < len ? pad('0' + val, 
 
 /**
  * 格式化日期
- * @param {Date | String} d 
+ * @param {Date|String|Number} d 
  * @param {String} format 
  */
 var formatDate = function (d, format) {
@@ -28,34 +28,35 @@ var formatDate = function (d, format) {
   var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   var shortMonthNames = monthNames.map(function (_) { return _.slice(0, 3); });
   var shortDayNames = dayNames.map(function (_) { return _.slice(0, 3); });
-
-  return format
-    .replace(/yyyy/g, function () { return year; }) // 年份（四位）
-    .replace(/yy/g, function () { return (year + '').slice(2); }) // 年份（两位）
-    .replace(/MMMM/g, function () { return monthNames[month - 1]; }) // 月份（英文）
-    .replace(/MMM/g, function () { return shortMonthNames[month - 1]; }) // 月份（英文简写
-    .replace(/MM/g, function () { return pad(month, 2); }) // 月份（两位）
-    .replace(/M/g, function () { return month; }) // 月份（一位）
-    .replace(/dddd/g, function () { return dayNames[day]; }) // 星期（英文）
-    .replace(/ddd/g, function () { return shortDayNames[day]; }) // 星期（英文简写）
-    .replace(/dd/g, function () { return pad(date, 2); }) // 日期（两位）
-    .replace(/d/g, function () { return date; }) // 日期（一位）
-    .replace(/DD/g, function () { return '0' + day; }) // 星期（两位）
-    .replace(/D/g, function () { return day; }) // 星期（一位）
-    .replace(/HH/g, function () { return pad(hours, 2); }) // 小时（24小时制两位）
-    .replace(/H/g, function () { return hours; }) // 小时（24小时制一位）
-    .replace(/hh/g, function () { return pad(hours > 12 ? hours - 12 : hours, 2); }) // 小时（12小时制两位）
-    .replace(/h/g, function () { return hours > 12 ? hours - 12 : hours; }) // 小时（12小时制一位）
-    .replace(/mm/g, function () { return pad(minutes, 2); }) // 分钟（两位）
-    .replace(/m/g, function () { return minutes; }) // 分钟（一位）
-    .replace(/ss/g, function () { return pad(seconds, 2); }) // 秒钟（两位）
-    .replace(/s/g, function () { return seconds; }) // 秒钟（一位）
-    .replace(/SSS/g, function () { return pad(ms, 3); }) // 毫秒（三位）
-    .replace(/SS/g, function () { return pad(Math.round(ms / 10), 2); }) // 毫秒（两位）
-    .replace(/S/g, function () { return Math.round(ms / 100); }) // 毫秒（一位）
-    .replace(/A/g, function () { return hours > 12 ? 'PM' : 'AM'; }) // 上午与下午（大写）
-    .replace(/a/g, function () { return hours > 12 ? 'pm' : 'am'; }) // 上午与下午（小写）
-    .replace(/ZZ/g, function () { return (zone > 0 ? '-' : '+') + pad(Math.floor(Math.abs(zone) / 60) * 100 + Math.abs(zone) % 60, 4); }) // 时区
+  var fn = function (val) { return function () { return val; }; };
+  return [
+    [/yyyy/g, fn(year)], // 年份（四位）
+    [/yy/g, fn((year + '').slice(2))], // 年份（两位）
+    [/MMMM/g, fn(monthNames[month - 1])], // 月份（英文）
+    [/MMM/g, fn(shortMonthNames[month - 1])], // 月份（英文简写）
+    [/MM/g, fn(pad(month, 2))], // 月份（两位）
+    [/M/g, fn(month)], // 月份（一位）
+    [/dddd/g, fn(dayNames[day])], // 星期（英文）
+    [/ddd/g, fn(shortDayNames[day])], // 星期（英文简写）
+    [/dd/g, fn(pad(date, 2))], // 日期（两位）
+    [/d/g, fn(date)], // 日期（一位）
+    [/DD/g, fn('0' + day)], // 星期（两位）
+    [/D/g, fn(day)], // 星期（一位）
+    [/HH/g, fn(pad(hours, 2))], // 小时（24小时制两位）
+    [/H/g, fn(hours)], // 小时（24小时制一位）
+    [/hh/g, fn(pad(hours > 12 ? hours - 12 : hours, 2))], // 小时（12小时制两位）
+    [/h/g, fn(hours > 12 ? hours - 12 : hours)], // 小时（12小时制一位）
+    [/mm/g, fn(pad(minutes, 2))], // 分钟（两位）
+    [/m/g, pad(minutes, 2)], // 分钟（一位）
+    [/ss/g, fn(pad(seconds, 2))], // 秒钟（两位）
+    [/s/g, fn(seconds)], // 秒钟（一位）
+    [/SSS/g, fn(pad(ms, 3))], // 毫秒（三位）
+    [/SS/g, fn(pad(Math.round(ms / 10), 2))], // 毫秒（两位）
+    [/S/g, fn(Math.round(ms / 100))], // 毫秒（一位）
+    [/A/g, fn(hours > 12 ? 'PM' : 'AM')], // 上午与下午（大写）
+    [/a/g, fn(hours > 12 ? 'pm' : 'am')], // 上午与下午（小写）
+    [/ZZ/g, fn((zone > 0 ? '-' : '+') + pad(Math.floor(Math.abs(zone) / 60) * 100 + Math.abs(zone) % 60, 4))] // 时区
+  ].reduce(function (acc, _) { return acc.replace(_[0], _[1]); }, format)
 };
 
 /**
@@ -64,24 +65,25 @@ var formatDate = function (d, format) {
  * @param {String} name 
  */
 var getParentComponent = function (vm, name) {
-  var parent = vm.$parent;
-  while (parent) {
-    if (parent.$options.name === name) {
-      return parent
-    }
-    parent = parent.$parent;
-  }
+  var par = vm.$parent;
+  return par && (par.$options.name === name ? par : getParentComponent(par, name))
 };
 
 /**
  * 获取所有子组件
  * @param {import('vue').default} vm 
  * @param {String?} name 若提供 则获取所有指定name的子组件
+ * @param {Boolean} flag 当基于name查找时，如果为真 则 查找到后 不再向下继续查找
  * @returns {import('vue').default[]} 子组件数组
  */
-var getChildComponents = function (vm, name) {
-  var childs = name ? vm.$children.filter(function (_) { return _.$options.name === name; }) : vm.$children;
-  return childs.reduce(function (acc, _) { return acc.concat( [_], (_.$children.length ? getChildComponents(_, name) : [])); }, [])
+var getChildComponents = function (vm, name, flag) {
+  return vm.$children.reduce(function (acc, _) {
+    if (!name || _.$options.name === name) {
+      acc.push(vm);
+      if (name && flag) { return acc }
+    }
+    return acc.concat( (_.$children.length ? getChildComponents(_, name, flag) : []))
+  }, [])
 };
 
 /**

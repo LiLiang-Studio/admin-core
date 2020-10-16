@@ -256,13 +256,8 @@ __vue_render__._withStripped = true;
  * @param {String} name 
  */
 var getParentComponent = function (vm, name) {
-  var parent = vm.$parent;
-  while (parent) {
-    if (parent.$options.name === name) {
-      return parent
-    }
-    parent = parent.$parent;
-  }
+  var par = vm.$parent;
+  return par && (par.$options.name === name ? par : getParentComponent(par, name))
 };
 
 /* ===================== 高阶函数部分 ===================== */
