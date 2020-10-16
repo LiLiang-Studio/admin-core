@@ -110,8 +110,6 @@ var getSubStr = function (str, byteLen) {
  */
 var getSize = function (size) { return size && isNaN(size) ? size : ((+size) + "px"); };
 
-/* ===================== 高阶函数部分 ===================== */
-
 /**
  * 获取路由
  * 该方法为解决：页面加载时 我们无法通过this.$route获取到正确的动态加载的路由
@@ -232,9 +230,7 @@ var converter = function (routes, basePath) {
     } else {
       route.meta = { key: key };
     }
-    if (route.children) {
-      converter(route.children, key);
-    }
+    route.children && converter(route.children, key);
   });
   return routes
 };
@@ -246,20 +242,30 @@ var converter = function (routes, basePath) {
  * @param {String[]} tags 
  */
 var filterRoutes = function (routes, tags) {
-  var eachRoute = function (child, parent) {
-    var tag = child.meta.permissionTag;
-    if (tag && tags.indexOf(tag) < 0) {
-      if (parent) {
-        parent.children.splice(parent.children.indexOf(child), 1, null);
-      } else {
-        routes.splice(routes.indexOf(parent), 1);
+  var rtnData = [], eachFn = function (childs, parent) {
+    childs.forEach(function (_) {
+      var children = _.children;
+      var rest = objectWithoutProperties( _, ["children"] );
+      var item = rest;
+      var tag = _.meta && _.meta.permissionTag;
+      if (!tag || tags.indexOf(tag) > -1) {
+        if (parent) {
+          if (parent.children) {
+            parent.children.push(item);
+          } else {
+            parent.children = [item];
+          }
+        } else {
+          rtnData.push(item);
+        }
+        children && eachFn(children, item);
       }
-    } else if (child.children) {
-      child.children.forEach(function (_) { return eachRoute(_, child); });
-      child.children = child.children.filter(function (_) { return _; });
-    }
+    });
   };
-  return tags && routes.forEach(function (_) { return eachRoute(_); }), converter(routes)
+  if (tags) {
+    return eachFn(routes), converter(rtnData)
+  }
+  return converter(routes)
 };
 
 /**

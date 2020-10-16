@@ -20,9 +20,7 @@ const converter = (routes, basePath) => {
     } else {
       route.meta = { key }
     }
-    if (route.children) {
-      converter(route.children, key)
-    }
+    route.children && converter(route.children, key)
   })
   return routes
 }
@@ -34,20 +32,27 @@ const converter = (routes, basePath) => {
  * @param {String[]} tags 
  */
 const filterRoutes = (routes, tags) => {
-  const eachRoute = (child, parent) => {
-    let tag = child.meta.permissionTag
-    if (tag && tags.indexOf(tag) < 0) {
-      if (parent) {
-        parent.children.splice(parent.children.indexOf(child), 1, null)
-      } else {
-        routes.splice(routes.indexOf(parent), 1)
+  const rtnData = [], eachFn = (childs, parent) => {
+    childs.forEach(_ => {
+      let { children, ...item } = _, tag = _.meta && _.meta.permissionTag
+      if (!tag || tags.indexOf(tag) > -1) {
+        if (parent) {
+          if (parent.children) {
+            parent.children.push(item)
+          } else {
+            parent.children = [item]
+          }
+        } else {
+          rtnData.push(item)
+        }
+        children && eachFn(children, item)
       }
-    } else if (child.children) {
-      child.children.forEach(_ => eachRoute(_, child))
-      child.children = child.children.filter(_ => _)
-    }
+    })
   }
-  return tags && routes.forEach(_ => eachRoute(_)), converter(routes)
+  if (tags) {
+    return eachFn(routes), converter(rtnData)
+  }
+  return converter(routes)
 }
 
 /**

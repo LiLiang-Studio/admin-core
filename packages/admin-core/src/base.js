@@ -103,8 +103,6 @@ const getSubStr = (str, byteLen) => {
  */
 const getSize = size => size && isNaN(size) ? size : `${+size}px`
 
-/* ===================== 高阶函数部分 ===================== */
-
 /**
  * 获取路由
  * 该方法为解决：页面加载时 我们无法通过this.$route获取到正确的动态加载的路由
