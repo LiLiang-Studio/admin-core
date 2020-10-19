@@ -1,5 +1,5 @@
 /*!
- * admin-core.js v1.2.1
+ * admin-core.js v1.2.2
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -79,7 +79,7 @@ var getParentComponent = function (vm, name) {
 var getChildComponents = function (vm, name, flag) {
   return vm.$children.reduce(function (acc, _) {
     if (!name || _.$options.name === name) {
-      acc.push(vm);
+      acc.push(_);
       if (name && flag) { return acc }
     }
     return acc.concat( (_.$children.length ? getChildComponents(_, name, flag) : []))

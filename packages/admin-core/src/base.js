@@ -72,7 +72,7 @@ const getParentComponent = (vm, name) => {
 const getChildComponents = (vm, name, flag) => {
   return vm.$children.reduce((acc, _) => {
     if (!name || _.$options.name === name) {
-      acc.push(vm)
+      acc.push(_)
       if (name && flag) return acc
     }
     return [...acc, ...(_.$children.length ? getChildComponents(_, name, flag) : [])]
