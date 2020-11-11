@@ -1,5 +1,5 @@
 /*!
- * admin-core.element.js v1.2.2
+ * admin-core.element.js v1.2.4
  * (c) 2019-2020 LiLiang
  * Released under the MIT License.
  */
@@ -829,10 +829,14 @@ var script$5 = {
       type: Boolean,
       default: true
     },
-    menuSize: String
+    menuSize: String,
+    defaultCollapse: {
+      type: Boolean,
+      default: false
+    }
   },
   data: function data() {
-    return { prefix: 'c-frame-layout', collapse: false }
+    return { prefix: 'c-frame-layout', collapse: this.defaultCollapse }
   },
   computed: {
     asideProps: function asideProps() {

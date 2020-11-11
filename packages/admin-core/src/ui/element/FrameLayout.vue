@@ -43,10 +43,14 @@ export default {
       type: Boolean,
       default: true
     },
-    menuSize: String
+    menuSize: String,
+    defaultCollapse: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
-    return { prefix: 'c-frame-layout', collapse: false }
+    return { prefix: 'c-frame-layout', collapse: this.defaultCollapse }
   },
   computed: {
     asideProps() {
