@@ -42,12 +42,17 @@ export default {
     addItem(route) {
       if (route.matched.length) {
         if (route.meta.notTab) return this.current = ''
+        let prevIndex = this.tabs.indexOf(this.current)
         this.current = route.fullPath
         let index = this.tabs.findIndex(_ => {
           let curRoute = this.getRoute(_)
           return _ === this.current || (route.name && route.name === curRoute.name)
         })
-        index < 0 ? this.tabs.push(this.current) : this.tabs.splice(index, 1, this.current)
+        if (index < 0) {
+          prevIndex < 0 ? this.tabs.push(this.current) : this.tabs.splice(prevIndex + 1, 0, this.current)
+        } else {
+          this.tabs.splice(index, 1, this.current)
+        }
       }
     },
     onTabClick(tab) {
@@ -55,7 +60,7 @@ export default {
     },
     onTabRemove(name) {
       let index = this.tabs.indexOf(name)
-      let nextTab = this.tabs[index + 1] || this.tabs[index - 1]
+      let nextTab = this.tabs[index - 1] || this.tabs[index + 1]
       this.tabs.splice(index, 1)
       name === this.current && this.$router.push(nextTab ? nextTab : '/').catch((e) => {
         this.tabs = [name]
