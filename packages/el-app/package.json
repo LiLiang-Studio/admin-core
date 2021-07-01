@@ -7,8 +7,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "serve": "env-cmd -e development -r ../../envrc.js vue-cli-service serve",
-    "build": "env-cmd -e production -r ../../envrc.js vue-cli-service build"
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
   },
   "dependencies": {
     "@xview-ui/admin-core": "^1.1.2",

@@ -2,6 +2,7 @@
  * 核心模块
  */
 import * as base from './base'
+import '../index'
 
 const isFunc = f => typeof f === 'function'
 
