@@ -1,23 +1,29 @@
+/**
+ * Vue组件实例
+ * @typedef {import('vue').default} Vue
+ */
+
+/** */
 const isStr = v => typeof v === 'string'
 const isFunc = v => typeof v === 'function'
-const isDate = v => v instanceof Date
 
 /**
  * 前面填充0
- * @param {number | string} val
+ * @param {number|string} val
  * @param {number} len
- * @returns {number | string}
+ * @returns {number|string}
  */
 const pad = (val, len) => (val + '').length < len ? pad('0' + val, len) : val
 
 /**
  * 格式化日期
- * @param {Date|String|Number} d
- * @param {String} format
+ * @param {Date|string|number} d
+ * @param {string} format
+ * @returns {string}
  */
 export const formatDate = (d, format = 'yyyy-MM-dd HH:mm:ss') => {
   if (!(d && (d + '').trim())) return ''
-  if (!isDate(d)) {
+  if (!(d instanceof Date)) {
     let date = new Date(d)
     if (isNaN(date)) {
       date = new Date(...(d + '').split(/-|:|\s/g).map(_ => +_))
@@ -67,12 +73,12 @@ export const formatDate = (d, format = 'yyyy-MM-dd HH:mm:ss') => {
     [/A/g, fn(hours > 12 ? 'PM' : 'AM')], // 上午与下午（大写）
     [/a/g, fn(hours > 12 ? 'pm' : 'am')], // 上午与下午（小写）
     [/ZZ/g, fn((zone > 0 ? '-' : '+') + pad(Math.floor(Math.abs(zone) / 60) * 100 + Math.abs(zone) % 60, 4))] // 时区
-  ].reduce((acc, _) => acc.replace(_[0], _[1]), format)
+  ].reduce((t, _) => t.replace(_[0], _[1]), format)
 }
 
 /**
  * 根据父组件名称，查找父组件
- * @param {import('vue').default} vm
+ * @param {Vue} vm
  * @param {string} name
  */
 export const getParentComponent = (vm, name) => {
@@ -86,18 +92,19 @@ export const getParentComponent = (vm, name) => {
 
 /**
  * 获取所有子组件
- * @param {import('vue').default} vm
+ * @param {Vue} vm
  * @param {string?} name 若不提供该参数，则查找所有子组件并忽略`flag`参数
  * @param {boolean?} flag 默认为深查找，该参数设为`true`，则为浅查找
- * @returns {import('vue').default[]}
+ * @returns {Vue[]}
  */
 export const getChildComponents = (vm, name, flag) => {
-  const hasChild = _ => _.$children.length > 0
-  const isMatch = _ => _.$options.name === name
+  const hasChild = (/** @type {Vue} */ vm) => vm.$children.length > 0
+  const isMatch = (/** @type {Vue} */ vm) => vm.$options.name === name
+  const each = (/** @type {(t: Vue[], vm: Vue) => Vue[]} */ fn) => (/** @type {Vue} */ vm) => vm.$children.reduce(fn, [])
   const fn = name
     ? flag
-      ? vm => vm.$children.reduce((t, _) => t.concat(isMatch(_) ? [_] : [], hasChild(_) ? fn(_) : []), [])
-      : vm => vm.$children.reduce((t, _) => t.concat(isMatch(_) ? [_] : hasChild(_) ? fn(_) : []), [])
-    : vm => vm.$children.reduce((t, _) => t.concat([_], hasChild(_) ? fn(_) : []), [])
+      ? each((t, _) => t.concat(isMatch(_) ? [_] : [], hasChild(_) ? fn(_) : []))
+      : each((t, _) => t.concat(isMatch(_) ? [_] : hasChild(_) ? fn(_) : []))
+    : each((t, _) => t.concat([_], hasChild(_) ? fn(_) : []))
   return fn(vm)
 }
