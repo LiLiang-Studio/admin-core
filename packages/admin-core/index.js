@@ -1,7 +1,39 @@
 /**
- * Vue组件实例
- * @typedef {import('vue').default} Vue
+ * @typedef {import('vue').default} Vue Vue组件实例
+ * 
+ * @typedef {import('vue').VueConstructor} VueConstructor Vue构造器
+ * 
+ * @typedef {import('vue-router').default} VueRouter VueRouter实例
+ * 
+ * @typedef {import('vue-router').RouteConfig} RouteConfig 路由配置
+ * 
+ * @typedef {import('vuex').Store} Store Store实例
+ * 
+ * @typedef {(rule, value, callback: (e?: Error) => void) => void} ValidatorFunction
+ * 
+ * @typedef RuleOption 验证规则选项
+ * @property {string?} trigger
+ * @property {boolean?} required
+ * @property {string?} msg
+ * @property {string?} regmsg
+ * @property {ValidatorFunction?} callback
+ * 
+ * @typedef {RuleOption & { port?: boolean }} IpRuleOption IP验证规则选项
+ * 
+ * @typedef FormValidatorRuleOption 表单验证规则选项
+ * @property {string} trigger
+ * @property {boolean} required
+ * @property {ValidatorFunction} validator
+ * 
+ * @typedef LibExportedOption 库导出选项
+ * @property {string?} name
+ * @property {RouteConfig[]} routes
+ * @property {import('vuex').Module} store
+ * 
+ * @typedef {LibExportedOption | (Vue: Vue, store: Store, router: VueRouter) => LibExportedOption} LibExportResult
  */
+
+import Vue from 'vue'
 
 /** */
 const isStr = v => typeof v === 'string'
@@ -80,6 +112,7 @@ export const formatDate = (d, format = 'yyyy-MM-dd HH:mm:ss') => {
  * 根据父组件名称，查找父组件
  * @param {Vue} vm
  * @param {string} name
+ * @returns {Vue|undefined}
  */
 export const getParentComponent = (vm, name) => {
   const parentComponent = vm.$parent
@@ -107,4 +140,236 @@ export const getChildComponents = (vm, name, flag) => {
       : each((t, _) => t.concat(isMatch(_) ? [_] : hasChild(_) ? fn(_) : []))
     : each((t, _) => t.concat([_], hasChild(_) ? fn(_) : []))
   return fn(vm)
+}
+
+/**
+ * 获取当前路径匹配的路由
+ * @param {VueRouter} router
+ */
+export const getRoute = router => () => {
+  return router.resolve(router.mode === 'hash' ? location.hash.slice(1) : location.pathname).route
+}
+
+const REG_PORT = /^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/
+const REG_IP = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+const REG_IP_HAS_PORT = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\:([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/
+
+/**
+ * @param {IpRuleOption} options
+ * @returns {FormValidatorRuleOption}
+ */
+export const createIpRule = (options = {}) => {
+  const { trigger = null, required = true, port } = options
+  const msgPrefix = port ? '（含端口号）' : ''
+  const msg = options.msg || `请输入IP地址${msgPrefix}`
+  const regmsg = options.regmsg || `请输入合法的IP地址${msgPrefix}`
+  return {
+    trigger,
+    required,
+    validator (rule, value, callback) {
+      if (value) {
+        if ((port ? REG_IP_HAS_PORT : REG_IP).test(value)) {
+          options.callback ? options.callback(rule, value, callback) : callback()
+        } else {
+          callback(new Error(regmsg))
+        }
+      } else {
+        required ? callback(new Error(msg)) : callback()
+      }
+    }
+  }
+}
+
+/**
+ * @param {RuleOption} options
+ * @returns {FormValidatorRuleOption}
+ */
+export const createPortRule = (options = {}) => {
+  const { trigger = null, required = true } = options
+  return {
+    trigger,
+    required,
+    validator (rule, value, callback) {
+      if (value) {
+        if (REG_PORT.test(value)) {
+          options.callback ? options.callback(rule, value, callback) : callback()
+        } else {
+          callback(new Error(options.regmsg || '请输入合法的端口号'))
+        }
+      } else {
+        required ? callback(new Error(options.msg || '请输入端口号')) : callback()
+      }
+    }
+  }
+}
+
+/**
+ * 路由配置元数据添加key
+ * @param {RouteConfig[]} routes
+ * @param {string?} basePath
+ */
+const addRouteMetaKey = (routes, basePath) => {
+  routes.forEach(route => {
+    const key = basePath ? `${basePath}/${route.path}` : route.path
+    if (route.meta) {
+      route.meta.key = key
+    } else {
+      route.meta = { key }
+    }
+    route.children && addRouteMetaKey(route.children, key)
+  })
+  return routes
+}
+
+/**
+ * 过滤掉没有权限的路由配置
+ * @param {RouteConfig[]} routes
+ * @param {string[]?} tags
+ */
+export const filterRoutes = (routes, tags) => {
+  const rtnData = []
+  const filter = (/** @type {RouteConfig[]} */ childs, /** @type {RouteConfig} */ parent) => {
+    childs.forEach(route => {
+      const { children, ...item } = route
+      const tag = route.meta && route.meta.permissionTag
+      if (!tag || tags.includes(tag)) {
+        if (parent) {
+          if (parent.children) {
+            parent.children.push(item)
+          } else {
+            parent.children = [item]
+          }
+        } else {
+          rtnData.push(item)
+        }
+        children && filter(children, item)
+      }
+    })
+  }
+  if (tags) {
+    filter(routes)
+    return addRouteMetaKey(rtnData)
+  }
+  return addRouteMetaKey(routes)
+}
+
+/**
+ * 提取需要添加到菜单中的路由配置
+ * @param {RouteConfig[]} routes
+ */
+const filterMenus = routes => {
+  const /** @type {RouteConfig[]} */ menus = []
+  const filter = (/** @type {RouteConfig[]} */ childs, /** @type {RouteConfig} */ parent) => {
+    childs.forEach(route => {
+      const { children, ...item } = route
+      if (item.meta && item.meta.notMenu) return
+      if (parent) {
+        if (parent.children) {
+          parent.children.push(item)
+        } else {
+          parent.children = [item]
+        }
+      } else {
+        menus.push(item)
+      }
+      children && filter(children, item)
+    })
+  }
+  filter(routes)
+  return menus
+}
+
+/**
+ * @param {string} url 
+ */
+const getLibName = url => {
+  const dirs = url.split('/')
+  let fileName = dirs.pop()
+  if (fileName.startsWith('index.')) {
+    fileName = dirs.pop() || fileName
+  }
+  return fileName.split('.')[0]
+}
+
+/**
+ * umd库加载器
+ * @param {string|{[key: string]: string}} url
+ */
+const umdLoader = url => {
+  const src = isStr(url) ? url : url[Object.keys(url)[0]]
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script')
+    script.onload = () => {
+      const libName = getLibName(src)
+      const lib = window[libName]
+      if (lib) {
+        resolve(lib)
+      } else {
+        reject(new Error(`The exported name <${libName}> was not found`))
+      }
+      script.onload = script.onerror = null
+      script = null
+    }
+    script.onerror = reject
+    script.src = src
+    document.body.appendChild(script)
+  })
+}
+
+/** @type {RouteConfig[]} */
+const _menus = Vue.observable([])
+
+export const getMenus = () => _menus
+
+/**
+ * 添加菜单
+ * @param {RouteConfig[]} routes
+ * @param {VueRouter} router
+ */
+const addMenus = (routes, router) => {
+  if (isFunc(router.addRoute)) {
+    routes.forEach(route => {
+      router.addRoute(route)
+    })
+  } else {
+    router.addRoutes(routes)
+  }
+  _menus.push(...filterMenus(routes))
+  _menus.sort((a, b) => a.meta.index - b.meta.index)
+}
+
+/**
+ * 模块加载器
+ * @param {Store} store
+ * @param {VueRouter} router
+ */
+export const moduleLoader = (store, router) => {
+  const loader = (module, tags, index = 1000) => {
+    const /** @type {Promise<any>} */ modPromise = isStr(module) ? umdLoader(module) : module()
+    return modPromise.then(({ default: _mod }) => {
+      /** @type {LibExportedOption} */
+      const mod = isFunc(_mod) ? _mod(Vue, store, router) : _mod
+      if (mod.store) {
+        store.registerModule(mod.name, mod.store)
+      }
+      if (mod.routes) {
+        mod.routes.forEach(route => {
+          if (route.meta) {
+            route.meta.index = index
+          } else {
+            route.meta = { index }
+          }
+        })
+        addMenus(filterRoutes(mod.routes, tags), router)
+      }
+    })
+  }
+  return (modules, tags) => Promise.all(
+    Object.keys(modules).map((key, index) => {
+      return loader(modules[key], tags, index)
+        .catch((/** @type {Error} */ e) => {
+          console.log(`Module load error: ${e.message}`)
+        })
+    })
+  )
 }
