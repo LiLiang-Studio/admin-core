@@ -27,7 +27,7 @@ export default {
       return {
         showTabs: true,
         menuSize: 'small',
-        menus: this.$store.state.core.menus
+        menus: this.$adminCore.getMenus()
       }
     }
   }

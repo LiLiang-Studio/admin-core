@@ -34,7 +34,7 @@ export default {
       if (route.path.startsWith('/entry')) {
         return route.matched.length < 1 && this.$router.replace({ name: 'login' })
       }
-      this.$adminCore.moduleLoader(modules).then(() => {
+      this.$adminCore.moduleLoader(modules, ['test', 'test:a', 'test:b']).then(() => {
         this.getRoute().matched.length < 1 && this.$router.replace('/')
       })
     }

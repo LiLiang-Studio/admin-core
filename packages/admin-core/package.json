@@ -1,6 +1,6 @@
 {
   "name": "@xview-ui/admin-core",
-  "version": "1.2.5",
+  "version": "2.0.0",
   "description": "基于Vuejs的中后台开发基础模块和基于element-ui的基础布局组件",
   "main": "dist/admin-core.js",
   "author": "liliang",

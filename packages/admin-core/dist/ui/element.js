@@ -1,6 +1,6 @@
 /*!
- * admin-core.element.js v1.2.5
- * (c) 2019-2020 LiLiang
+ * admin-core.element.js v2.0.0
+ * (c) 2019-2021 LiLiang
  * Released under the MIT License.
  */
 //
@@ -237,7 +237,7 @@ __vue_render__._withStripped = true;
   
 
   
-  var __vue_component__ = normalizeComponent(
+  var __vue_component__ = /*#__PURE__*/normalizeComponent(
     { render: __vue_render__, staticRenderFns: __vue_staticRenderFns__ },
     __vue_inject_styles__,
     __vue_script__,
@@ -251,19 +251,23 @@ __vue_render__._withStripped = true;
   );
 
 /**
- * 根据name获取父组件
- * @param {import('vue').default} vm 
- * @param {String} name 
+ * 根据父组件名称，查找父组件
+ * @param {Vue} vm
+ * @param {string} name
+ * @returns {Vue|undefined}
  */
 var getParentComponent = function (vm, name) {
-  var par = vm.$parent;
-  return par && (par.$options.name === name ? par : getParentComponent(par, name))
+  var parentComponent = vm.$parent;
+  return parentComponent && (
+    parentComponent.$options.name === name
+      ? parentComponent
+      : getParentComponent(parentComponent, name)
+  )
 };
 
 /**
- * 获取路由
- * 该方法为解决：页面加载时 我们无法通过this.$route获取到正确的动态加载的路由
- * @param {import('vue-router').default} router
+ * 获取当前路径匹配的路由
+ * @param {VueRouter} router
  */
 var getRoute = function (router) { return function () {
   return router.resolve(router.mode === 'hash' ? location.hash.slice(1) : location.pathname).route
@@ -419,7 +423,7 @@ __vue_render__$1._withStripped = true;
   
 
   
-  var __vue_component__$1 = normalizeComponent(
+  var __vue_component__$1 = /*#__PURE__*/normalizeComponent(
     { render: __vue_render__$1, staticRenderFns: __vue_staticRenderFns__$1 },
     __vue_inject_styles__$1,
     __vue_script__$1,
@@ -521,7 +525,7 @@ __vue_render__$2._withStripped = true;
   
 
   
-  var __vue_component__$2 = normalizeComponent(
+  var __vue_component__$2 = /*#__PURE__*/normalizeComponent(
     { render: __vue_render__$2, staticRenderFns: __vue_staticRenderFns__$2 },
     __vue_inject_styles__$2,
     __vue_script__$2,
@@ -611,7 +615,7 @@ __vue_render__$3._withStripped = true;
   
 
   
-  var __vue_component__$3 = normalizeComponent(
+  var __vue_component__$3 = /*#__PURE__*/normalizeComponent(
     { render: __vue_render__$3, staticRenderFns: __vue_staticRenderFns__$3 },
     __vue_inject_styles__$3,
     __vue_script__$3,
@@ -806,7 +810,7 @@ __vue_render__$4._withStripped = true;
   
 
   
-  var __vue_component__$4 = normalizeComponent(
+  var __vue_component__$4 = /*#__PURE__*/normalizeComponent(
     { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
     __vue_inject_styles__$4,
     __vue_script__$4,
@@ -997,7 +1001,7 @@ __vue_render__$5._withStripped = true;
   
 
   
-  var __vue_component__$5 = normalizeComponent(
+  var __vue_component__$5 = /*#__PURE__*/normalizeComponent(
     { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
     __vue_inject_styles__$5,
     __vue_script__$5,
@@ -1202,7 +1206,7 @@ __vue_render__$6._withStripped = true;
   
 
   
-  var __vue_component__$6 = normalizeComponent(
+  var __vue_component__$6 = /*#__PURE__*/normalizeComponent(
     { render: __vue_render__$6, staticRenderFns: __vue_staticRenderFns__$6 },
     __vue_inject_styles__$6,
     __vue_script__$6,

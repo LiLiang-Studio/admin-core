@@ -1,26 +1,43 @@
+import './typedef'
+
+/**
+ * 前面填充0
+ * @param {number|string} val
+ * @param {number} len
+ * @returns {number|string}
+ */
 const pad = (val, len) => (val + '').length < len ? pad('0' + val, len) : val
 
 /**
  * 格式化日期
- * @param {Date|String|Number} d 
- * @param {String} format 
+ * @param {Date|string|number} d
+ * @param {string} format
+ * @returns {string}
  */
-const formatDate = (d, format = 'yyyy-MM-dd HH:mm:ss') => {
-  if (!d) return ''
-  if (!(d instanceof Date)) d = new Date(d)
-  let year = d.getFullYear()
-  let month = d.getMonth() + 1
-  let date = d.getDate()
-  let day = d.getDay()
-  let hours = d.getHours()
-  let minutes = d.getMinutes()
-  let seconds = d.getSeconds()
-  let ms = d.getMilliseconds()
-  let zone = d.getTimezoneOffset()
-  let dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-  let monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-  let shortMonthNames = monthNames.map(_ => _.slice(0, 3))
-  let shortDayNames = dayNames.map(_ => _.slice(0, 3))
+export const formatDate = (d, format = 'yyyy-MM-dd HH:mm:ss') => {
+  if (!(d && (d + '').trim())) return ''
+  if (!(d instanceof Date)) {
+    let date = new Date(d)
+    if (isNaN(date)) {
+      date = new Date(...(d + '').split(/-|:|\s/g).map(_ => +_))
+      if (isNaN(date)) return d
+      date.setMonth(date.getMonth() - 1)
+    }
+    d = date
+  }
+  const year = d.getFullYear()
+  const month = d.getMonth() + 1
+  const date = d.getDate()
+  const day = d.getDay()
+  const hours = d.getHours()
+  const minutes = d.getMinutes()
+  const seconds = d.getSeconds()
+  const ms = d.getMilliseconds()
+  const zone = d.getTimezoneOffset()
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  const shortMonthNames = monthNames.map(_ => _.slice(0, 3))
+  const shortDayNames = dayNames.map(_ => _.slice(0, 3))
   const fn = val => () => val
   return [
     [/yyyy/g, fn(year)], // 年份（四位）
@@ -49,146 +66,100 @@ const formatDate = (d, format = 'yyyy-MM-dd HH:mm:ss') => {
     [/A/g, fn(hours > 12 ? 'PM' : 'AM')], // 上午与下午（大写）
     [/a/g, fn(hours > 12 ? 'pm' : 'am')], // 上午与下午（小写）
     [/ZZ/g, fn((zone > 0 ? '-' : '+') + pad(Math.floor(Math.abs(zone) / 60) * 100 + Math.abs(zone) % 60, 4))] // 时区
-  ].reduce((acc, _) => acc.replace(_[0], _[1]), format)
+  ].reduce((t, _) => t.replace(_[0], _[1]), format)
 }
 
 /**
- * 根据name获取父组件
- * @param {import('vue').default} vm 
- * @param {String} name 
+ * 根据父组件名称，查找父组件
+ * @param {Vue} vm
+ * @param {string} name
+ * @returns {Vue|undefined}
  */
-const getParentComponent = (vm, name) => {
-  const par = vm.$parent
-  return par && (par.$options.name === name ? par : getParentComponent(par, name))
+export const getParentComponent = (vm, name) => {
+  const parentComponent = vm.$parent
+  return parentComponent && (
+    parentComponent.$options.name === name
+      ? parentComponent
+      : getParentComponent(parentComponent, name)
+  )
 }
 
 /**
  * 获取所有子组件
- * @param {import('vue').default} vm 
- * @param {String?} name 若提供 则获取所有指定name的子组件
- * @param {Boolean} flag 当基于name查找时，如果为真 则 查找到后 不再向下继续查找
- * @returns {import('vue').default[]} 子组件数组
+ * @param {Vue} vm
+ * @param {string?} name 若不提供该参数，则查找所有子组件并忽略`flag`参数
+ * @param {boolean?} flag 默认为深查找，该参数设为`true`，则为浅查找
+ * @returns {Vue[]}
  */
-const getChildComponents = (vm, name, flag) => {
-  return vm.$children.reduce((acc, _) => {
-    if (!name || _.$options.name === name) {
-      acc.push(_)
-      if (name && flag) return acc
-    }
-    return [...acc, ...(_.$children.length ? getChildComponents(_, name, flag) : [])]
-  }, [])
+export const getChildComponents = (vm, name, flag) => {
+  const hasChild = (/** @type {Vue} */ vm) => vm.$children.length > 0
+  const isMatch = (/** @type {Vue} */ vm) => vm.$options.name === name
+  const each = (/** @type {(t: Vue[], vm: Vue) => Vue[]} */ fn) => (/** @type {Vue} */ vm) => vm.$children.reduce(fn, [])
+  const fn = name
+    ? flag
+      ? each((t, _) => t.concat(isMatch(_) ? [_] : [], hasChild(_) ? fn(_) : []))
+      : each((t, _) => t.concat(isMatch(_) ? [_] : hasChild(_) ? fn(_) : []))
+    : each((t, _) => t.concat([_], hasChild(_) ? fn(_) : []))
+  return fn(vm)
 }
 
 /**
- * 截取指定长度字符 按照1个汉字等于2个字符长度
- * @param {String} str 
- * @param {Number} byteLen 
+ * 获取当前路径匹配的路由
+ * @param {VueRouter} router
  */
-const getSubStr = (str, byteLen) => {
-  // eslint-disable-next-line
-  let num = 0, rtnStr = '', getLen = c => c.replace(/[^\x00-\xff]/g, '**').length
-  for (let i = 0, len = str.length; i < len; i++) {
-    let char = str.charAt(i)
-    let tempLen = num + getLen(char)
-    if (tempLen > byteLen) return rtnStr
-    rtnStr += char
-    num = tempLen
-  }
-  return rtnStr
-}
-
-/**
- * 获取尺寸 如果为数值或数值字符串 添加px单位 否则 直接返回
- * @param {String | Number} size
- */
-const getSize = size => size && isNaN(size) ? size : `${+size}px`
-
-/**
- * 获取路由
- * 该方法为解决：页面加载时 我们无法通过this.$route获取到正确的动态加载的路由
- * @param {import('vue-router').default} router
- */
-const getRoute = router => () => {
+export const getRoute = router => () => {
   return router.resolve(router.mode === 'hash' ? location.hash.slice(1) : location.pathname).route
 }
 
 const REG_PORT = /^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/
 const REG_IP = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
-const REG_IP_PORT = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\:([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/
+const REG_IP_HAS_PORT = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\:([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/
 
 /**
- * 创建IP验证规则
- * @param {{
- *   trigger: String, 
- *   required: Boolean, 
- *   port: Boolean,
- *   msg: String,
- *   regmsg: String, 
- *   remoteMethod: Function
- * }} options
+ * @param {IpRuleOption} options
+ * @returns {FormValidatorRuleOption}
  */
-const createIpRule = (options = {}) => {
-  let { trigger = null, required = true, port } = options
-  let msgPrefix = port ? '（含端口号）' : ''
-  let msg = options.msg || `请输入IP地址${msgPrefix}`
-  let regmsg = options.regmsg || `请输入合法的IP地址${msgPrefix}`
-  return [
-    {
-      trigger,
-      required,
-      validator(rule, value, callback) {
-        if (value) {
-          if ((port ? REG_IP_PORT : REG_IP).test(value)) {
-            options.remoteMethod ? options.remoteMethod(rule, value, callback) : callback()
-          } else {
-            callback(new Error(regmsg))
-          }
+export const createIpRule = (options = {}) => {
+  const { trigger = null, required = true, port } = options
+  const msgPrefix = port ? '（含端口号）' : ''
+  const msg = options.msg || `请输入IP地址${msgPrefix}`
+  const regmsg = options.regmsg || `请输入合法的IP地址${msgPrefix}`
+  return {
+    trigger,
+    required,
+    validator (rule, value, callback) {
+      if (value) {
+        if ((port ? REG_IP_HAS_PORT : REG_IP).test(value)) {
+          options.callback ? options.callback(rule, value, callback) : callback()
         } else {
-          required ? callback(new Error(msg)) : callback()
+          callback(new Error(regmsg))
         }
+      } else {
+        required ? callback(new Error(msg)) : callback()
       }
     }
-  ]
+  }
 }
 
 /**
- * 创建端口验证规则
- * @param {{
- *   trigger: String, 
- *   required: Boolean,
- *   msg: String,
- *   regmsg: String, 
- *   remoteMethod: Function
- * }} options 
+ * @param {RuleOption} options
+ * @returns {FormValidatorRuleOption}
  */
-const createPortRule = (options = {}) => {
-  let { trigger = null, required = true } = options
-  return [
-    {
-      trigger,
-      required,
-      validator(rule, value, callback) {
-        if (value) {
-          if (REG_PORT.test(value)) {
-            options.remoteMethod ? options.remoteMethod(rule, value, callback) : callback()
-          } else {
-            callback(new Error(options.regmsg || '请输入合法的端口号'))
-          }
+export const createPortRule = (options = {}) => {
+  const { trigger = null, required = true } = options
+  return {
+    trigger,
+    required,
+    validator (rule, value, callback) {
+      if (value) {
+        if (REG_PORT.test(value)) {
+          options.callback ? options.callback(rule, value, callback) : callback()
         } else {
-          required ? callback(new Error(options.msg || '请输入端口号')) : callback()
+          callback(new Error(options.regmsg || '请输入合法的端口号'))
         }
+      } else {
+        required ? callback(new Error(options.msg || '请输入端口号')) : callback()
       }
     }
-  ]
-}
-
-export {
-  formatDate,
-  getParentComponent,
-  getChildComponents,
-  getSubStr,
-  getRoute,
-  getSize,
-  createIpRule,
-  createPortRule
+  }
 }
