@@ -34,16 +34,16 @@ export default {
   }
 }
 </script>
-<style lang="less">
-@import url("../vars.less");
+<style lang="scss">
+@import '../vars.scss';
 .c-header {
   position: relative;
   z-index: 10;
   background: #fff;
-  box-shadow: @header-shadow;
+  box-shadow: $header-shadow;
   &.hasTabs {
     box-shadow: none;
-    border-bottom: 1px solid @border-color;
+    border-bottom: 1px solid $border-color;
   }
   &_topbar {
     height: 52px;

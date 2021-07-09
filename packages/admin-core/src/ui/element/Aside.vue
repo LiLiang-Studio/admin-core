@@ -69,16 +69,16 @@ export default {
   }
 }
 </script>
-<style lang="less">
-@import url("../vars.less");
-@aside: .c-aside;
-@popper: .c-submenu_popper;
-@{aside} {
+<style lang="scss">
+@import '../vars.scss';
+$aside: c-aside;
+$popper: c-submenu_popper;
+.#{$aside} {
   height: 100%;
-  background: @theme-bgcolor;
-  box-shadow: @aside-shadow;
+  background: $theme-bgcolor;
+  box-shadow: $aside-shadow;
   &_menu {
-    width: @aside-width;
+    width: $aside-width;
     &.el-menu {
       padding: 8px 0;
       border-right: none;
@@ -99,7 +99,7 @@ export default {
   }
 }
 
-@{popper}_normal, @{aside}_normal {
+.#{$popper}_normal, .#{$aside}_normal {
   .el-submenu .el-menu-item,
   .el-menu-item, .el-submenu__title {
     height: 48px;
@@ -107,7 +107,7 @@ export default {
   }
 }
 
-@{popper}_small, @{aside}_small {
+.#{$popper}_small, .#{$aside}_small {
   .el-submenu .el-menu-item,
   .el-menu-item, .el-submenu__title {
     height: 42px;

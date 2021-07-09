@@ -85,8 +85,8 @@ export default {
   }
 }
 </script>
-<style lang="less">
-@import url("../vars.less");
+<style lang="scss">
+@import '../vars.scss';
 .c-frame-layout {
   height: 100vh;
   display: flex;
@@ -105,7 +105,7 @@ export default {
   &_content {
     flex: 1;
     overflow: auto;
-    padding: @frame-padding;
+    padding: $frame-padding;
   }
   &_menuBtn.el-link {
     font-size: 24px;

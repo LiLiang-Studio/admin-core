@@ -33,7 +33,7 @@ export default {
   }
 }
 </script>
-<style lang="less">
+<style lang="scss">
 .app-main-layout {
   &_logo {
     font-size: 18px;

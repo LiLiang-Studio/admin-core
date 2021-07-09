@@ -85,20 +85,20 @@ export default {
   }
 }
 </script>
-<style lang="less">
-@import url("../vars.less");
-@padding: 3px;
+<style lang="scss">
+@import '../vars.scss';
+$padding: 3px;
 .c-tabs {
   position: relative;
   z-index: 10;
-  padding: @padding 0;
+  padding: $padding 0;
   background: #fff;
-  box-shadow: @header-shadow;
+  box-shadow: $header-shadow;
   .el-dropdown {
     position: absolute;
-    top: @padding;
+    top: $padding;
     right: 10px;
-    bottom: @padding;
+    bottom: $padding;
   }
   &_link.el-link {
     height: 100%;

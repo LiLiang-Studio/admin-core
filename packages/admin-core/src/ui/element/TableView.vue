@@ -86,31 +86,31 @@ export default {
   }
 }
 </script>
-<style lang="less">
-@import url("../vars.less");
+<style lang="scss">
+@import '../vars.scss';
 .c-table-view {
   background: #fff;
   border-radius: 6px;
-  border: 1px solid @border-color;
-  padding: @layout-padding @layout-padding @layout-padding * 2;
+  border: 1px solid $border-color;
+  padding: $layout-padding $layout-padding $layout-padding * 2;
   & + & {
-    margin-top: @frame-padding;
+    margin-top: $frame-padding;
   }
   &_searchBar {
     .el-form-item {
-      margin-bottom: @layout-padding !important;
+      margin-bottom: $layout-padding !important;
     }
   }
   &_searchBar + &_actionBar {
-    padding-top: @layout-padding / 2;
-    border-top: 1px solid @border-color;
+    padding-top: $layout-padding / 2;
+    border-top: 1px solid $border-color;
   }
   &_actionBar {
-    padding-bottom: @layout-padding / 2;
+    padding-bottom: $layout-padding / 2;
   }
   .el-pagination {
     text-align: center;
-    margin-top: @layout-padding;
+    margin-top: $layout-padding;
   }
 }
 </style>

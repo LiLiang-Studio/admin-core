@@ -26,5 +26,10 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "devDependencies": {
+    "node-sass": "^6.0.1",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.10"
+  }
 }

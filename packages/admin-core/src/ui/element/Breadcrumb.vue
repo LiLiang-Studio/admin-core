@@ -22,10 +22,10 @@ export default {
   }
 }
 </script>
-<style lang="less">
-@import url("../vars.less");
+<style lang="scss">
+@import '../vars.scss';
 .c-breadcrumb {
-  margin-bottom: @frame-padding;
+  margin-bottom: $frame-padding;
   &_back.el-link {
     font-size: 20px;
     margin-right: 6px;

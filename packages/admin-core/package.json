@@ -5,7 +5,9 @@
   "main": "dist/admin-core.js",
   "author": "liliang",
   "license": "MIT",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rollup -c"
   },
@@ -14,13 +16,10 @@
     "@rollup/plugin-json": "^4.0.1",
     "autoprefixer": "^9.6.1",
     "del": "^5.0.0",
-    "less": "^3.12.2",
-    "less-loader": "^7.0.0",
     "rollup": "^1.29.0",
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-terser": "^5.2.0",
-    "rollup-plugin-vue": "^5.1.5",
-    "vue-template-compiler": "^2.6.10"
+    "rollup-plugin-vue": "^5.1.5"
   },
   "keywords": [
     "admin",

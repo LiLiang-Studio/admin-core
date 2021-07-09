@@ -17,15 +17,15 @@ export default {
   }
 }
 </script>
-<style lang="less">
-@import url("../../assets/less/vars.less");
+<style lang="scss">
+@import '../../assets/theme.scss';
 .page-entry {
   min-height: 100vh;
   padding: 24px 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: @theme-bgcolor;
+  background-color: $theme-bgcolor;
   &-box {
     width: 360px;
     padding: 0 24px 24px;
@@ -37,7 +37,7 @@ export default {
     padding: 20px;
     font-size: 18px;
     text-align: center;
-    color: @text-color-important;
+    color: $text-color-important;
     .dot {
       display: inline-block;
       width: 5px;
@@ -45,7 +45,7 @@ export default {
       border-radius: 50%;
       margin: 0 8px;
       vertical-align: middle;
-      background-color: @text-color-important;
+      background-color: $text-color-important;
     }
   }
   &-code {
@@ -62,7 +62,7 @@ export default {
     justify-content: space-between;
     font-size: 13px;
     a {
-      color: @color-primary;
+      color: $color-primary;
       &:hover {
         text-decoration: underline;
       }
