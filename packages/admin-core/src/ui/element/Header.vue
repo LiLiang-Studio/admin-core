@@ -1,5 +1,5 @@
 <template>
-  <header :class="[prefix, {hasTabs}]">
+  <header :class="[prefix, {showTabs}]">
     <div :class="[`${prefix}_topbar`, topbarClass]" :style="topbarStyle">
       <div :class="`${prefix}_left`">
         <slot name="left"></slot>
@@ -13,24 +13,22 @@
   </header>
 </template>
 <script>
-import { getParentComponent } from '../../base'
 export default {
   name: 'CHeader',
+  inject: {
+    frameLayout: { default: '' }
+  },
   props: {
     topbarStyle: {},
     topbarClass: {}
   },
-  data() {
-    return { prefix: 'c-header', hasTabs: false }
+  data () {
+    return { prefix: 'c-header' }
   },
-  mounted() {
-    const parent = getParentComponent(this, 'CFrameLayout')
-    if (parent) {
-      this.unwatch = this.$watch(() => parent.showTabs, val => this.hasTabs = val, { immediate: true })
+  computed: {
+    showTabs () {
+      return (this.frameLayout || {}).showTabs
     }
-  },
-  destroyed() {
-    this.unwatch && this.unwatch()
   }
 }
 </script>
@@ -41,7 +39,7 @@ export default {
   z-index: 10;
   background: #fff;
   box-shadow: $header-shadow;
-  &.hasTabs {
+  &.showTabs {
     box-shadow: none;
     border-bottom: 1px solid $border-color;
   }

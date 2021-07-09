@@ -32,6 +32,9 @@ import CBreadcrumb from './Breadcrumb.vue'
 export default {
   name: 'CFrameLayout',
   components: { CTabs, CAside, CHeader, CBreadcrumb },
+  provide() {
+    return { frameLayout: this }
+  },
   props: {
     menus: Array,
     asideStyle: {},

@@ -60,8 +60,8 @@ export default {
     }
   },
   mounted() {
-    this.hasActions = this.$slots.actions !== undefined
-    this.hasSearchBar = this.$slots.search !== undefined
+    this.hasActions = this.$slots.actions
+    this.hasSearchBar = this.$slots.search
   },
   methods: {
     /**

@@ -27,7 +27,7 @@ export default {
   methods: {
     getRoute(item) {
       return this.$router.resolve(
-        name ? { name: item.name } : item.meta.key
+        item.name ? { name: item.name } : item.meta.key
       ).route.fullPath
     },
     getLink(item) {

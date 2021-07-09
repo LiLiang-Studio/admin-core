@@ -21,14 +21,14 @@ export default {
     },
     menuSize: {
       default: 'normal',
-      validator: v => ['small', 'normal', 'large'].indexOf(v) > -1
+      validator: v => ['small', 'normal', 'large'].includes(v)
     }
   },
-  data() {
+  data () {
     return { prefix: 'c-aside', defaultActive: undefined }
   },
   computed: {
-    menuProps() {
+    menuProps () {
       return {
         ref: 'Menu',
         uniqueOpened: true,
@@ -38,18 +38,15 @@ export default {
       }
     }
   },
-  mounted() {
-    this.unwatch = this.$watch(
+  mounted () {
+    this.$once('hook:destroyed', this.$watch(
       () => [this.menus.length, this.collapse, this.$route.path],
       ([_, __]) => _ > 0 && !__ && this.refreshMenu(),
       { immediate: true }
-    )
-  },
-  destroyed() {
-    this.unwatch()
+    ))
   },
   methods: {
-    refreshMenu() {
+    refreshMenu () {
       let route = getRoute(this.$router)()
       let menuRoute = route.matched[0]
       let index = menuRoute && menuRoute.meta.key

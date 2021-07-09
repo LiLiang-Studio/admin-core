@@ -12,11 +12,11 @@
 <script>
 export default {
   name: 'CBreadcrumb',
-  data() {
+  data () {
     return { prefix: 'c-breadcrumb' }
   },
   computed: {
-    items() {
+    items () {
       return this.$route.matched.filter(_ => _.meta.title)
     }
   }

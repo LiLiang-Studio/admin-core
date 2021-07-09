@@ -32,7 +32,7 @@ var script = {
   methods: {
     getRoute: function getRoute(item) {
       return this.$router.resolve(
-        name ? { name: item.name } : item.meta.key
+        item.name ? { name: item.name } : item.meta.key
       ).route.fullPath
     },
     getLink: function getLink(item) {
@@ -251,21 +251,6 @@ __vue_render__._withStripped = true;
   );
 
 /**
- * 根据父组件名称，查找父组件
- * @param {Vue} vm
- * @param {string} name
- * @returns {Vue|undefined}
- */
-var getParentComponent = function (vm, name) {
-  var parentComponent = vm.$parent;
-  return parentComponent && (
-    parentComponent.$options.name === name
-      ? parentComponent
-      : getParentComponent(parentComponent, name)
-  )
-};
-
-/**
  * 获取当前路径匹配的路由
  * @param {VueRouter} router
  */
@@ -285,14 +270,14 @@ var script$1 = {
     },
     menuSize: {
       default: 'normal',
-      validator: function (v) { return ['small', 'normal', 'large'].indexOf(v) > -1; }
+      validator: function (v) { return ['small', 'normal', 'large'].includes(v); }
     }
   },
-  data: function data() {
+  data: function data () {
     return { prefix: 'c-aside', defaultActive: undefined }
   },
   computed: {
-    menuProps: function menuProps() {
+    menuProps: function menuProps () {
       return {
         ref: 'Menu',
         uniqueOpened: true,
@@ -302,10 +287,10 @@ var script$1 = {
       }
     }
   },
-  mounted: function mounted() {
+  mounted: function mounted () {
     var this$1 = this;
 
-    this.unwatch = this.$watch(
+    this.$once('hook:destroyed', this.$watch(
       function () { return [this$1.menus.length, this$1.collapse, this$1.$route.path]; },
       function (ref) {
         var _ = ref[0];
@@ -314,13 +299,10 @@ var script$1 = {
         return _ > 0 && !__ && this$1.refreshMenu();
     },
       { immediate: true }
-    );
-  },
-  destroyed: function destroyed() {
-    this.unwatch();
+    ));
   },
   methods: {
-    refreshMenu: function refreshMenu() {
+    refreshMenu: function refreshMenu () {
       var this$1 = this;
 
       var route = getRoute(this.$router)();
@@ -450,11 +432,11 @@ __vue_render__$1._withStripped = true;
 
 var script$2 = {
   name: 'CBreadcrumb',
-  data: function data() {
+  data: function data () {
     return { prefix: 'c-breadcrumb' }
   },
   computed: {
-    items: function items() {
+    items: function items () {
       return this.$route.matched.filter(function (_) { return _.meta.title; })
     }
   }
@@ -539,29 +521,40 @@ __vue_render__$2._withStripped = true;
   );
 
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 var script$3 = {
   name: 'CHeader',
+  inject: {
+    frameLayout: { default: '' }
+  },
   props: {
     topbarStyle: {},
     topbarClass: {}
   },
-  data: function data() {
-    return { prefix: 'c-header', hasTabs: false }
+  data: function data () {
+    return { prefix: 'c-header' }
   },
-  mounted: function mounted() {
-    var this$1 = this;
-
-    var parent = getParentComponent(this, 'CFrameLayout');
-    if (parent) {
-      this.unwatch = this.$watch(function () { return parent.showTabs; }, function (val) { return this$1.hasTabs = val; }, { immediate: true });
+  computed: {
+    showTabs: function showTabs () {
+      return (this.frameLayout || {}).showTabs
     }
-  },
-  destroyed: function destroyed() {
-    this.unwatch && this.unwatch();
   }
 };
 
-var css_248z$2 = ".c-header{position:relative;z-index:10;background:#fff;-webkit-box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04);box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04)}.c-header.hasTabs{-webkit-box-shadow:none;box-shadow:none;border-bottom:1px solid #e4e7ed}.c-header_topbar{height:52px;padding:0 16px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.c-header_left>*,.c-header_middle>*{vertical-align:middle}.c-header_middle{-webkit-box-flex:1;-ms-flex:1;flex:1;padding:0 10px}";
+var css_248z$2 = ".c-header{position:relative;z-index:10;background:#fff;-webkit-box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04);box-shadow:2px 2px 1px -1px rgba(0,0,0,.1),2px 1px 1px 0 rgba(0,0,0,.06),2px 1px 3px 0 rgba(0,0,0,.04)}.c-header.showTabs{-webkit-box-shadow:none;box-shadow:none;border-bottom:1px solid #e4e7ed}.c-header_topbar{height:52px;padding:0 16px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.c-header_left>*,.c-header_middle>*{vertical-align:middle}.c-header_middle{-webkit-box-flex:1;-ms-flex:1;flex:1;padding:0 10px}";
 styleInject(css_248z$2);
 
 /* script */
@@ -573,7 +566,7 @@ var __vue_render__$3 = function() {
   var _c = _vm._self._c || _h;
   return _c(
     "header",
-    { class: [_vm.prefix, { hasTabs: _vm.hasTabs }] },
+    { class: [_vm.prefix, { showTabs: _vm.showTabs }] },
     [
       _c(
         "div",
@@ -827,6 +820,9 @@ __vue_render__$4._withStripped = true;
 var script$5 = {
   name: 'CFrameLayout',
   components: { CTabs: __vue_component__$4, CAside: __vue_component__$1, CHeader: __vue_component__$3, CBreadcrumb: __vue_component__$2 },
+  provide: function provide() {
+    return { frameLayout: this }
+  },
   props: {
     menus: Array,
     asideStyle: {},
@@ -1072,8 +1068,8 @@ var script$6 = {
     }
   },
   mounted: function mounted() {
-    this.hasActions = this.$slots.actions !== undefined;
-    this.hasSearchBar = this.$slots.search !== undefined;
+    this.hasActions = this.$slots.actions;
+    this.hasSearchBar = this.$slots.search;
   },
   methods: {
     /**
