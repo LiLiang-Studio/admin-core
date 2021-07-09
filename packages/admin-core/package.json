@@ -11,6 +11,10 @@
   "scripts": {
     "build": "rollup -c"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LiLiang-Studio/admin-core.git"
+  },
   "devDependencies": {
     "@rollup/plugin-buble": "^0.21.0",
     "@rollup/plugin-json": "^4.0.1",
